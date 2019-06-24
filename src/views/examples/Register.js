@@ -179,7 +179,7 @@ _onChangePassword(event){
                     <Input placeholder="Name" name = "userName" type="text" value={this.state.userName} onChange={this._onChangeUserName}/>
                   </InputGroup>
                 </FormGroup>
-                {/* <FormGroup>
+                <FormGroup>
                   <InputGroup className="input-group-alternative mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
@@ -188,7 +188,7 @@ _onChangePassword(event){
                     </InputGroupAddon>
                     <Input placeholder="Email" name = "email" type="email" value={this.state.email} onChange={this._onChangeEmail}/>
                   </InputGroup>
-                </FormGroup> */}
+                </FormGroup>
                 <FormGroup>
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
