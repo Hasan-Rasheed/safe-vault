@@ -1,6 +1,6 @@
 import React , {Component} from 'react';
 import firebase from 'firebase'
-import {signupAction, errorMessage} from '../../store/actions/actions';
+import { signupAction, errorMessage, getCurrentUserId, getUserPrivateKey , getNotification} from '../../store/actions/actions';
 import { connect } from 'react-redux';
 import history from '../../history';
 
@@ -69,33 +69,52 @@ signup(event) {
       let user = {
           email: this.state.email,
           userName: this.state.userName,
-          // lastName : this.state.lastName,
           password: this.state.password,
-          uid: ''
+          uid: '',
+          files: []
       }
       // this.props.signupwithEmailPassword(user);
       // console.log(user);
       firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
-  .then((createdUser) => {
-    console.log(createdUser)
-      console.log('signed up successfully', createdUser.user.uid);
+  .then((snapshot) => {
+    console.log(snapshot)
+      console.log('signed up successfully', snapshot.user.uid);
+      this.props.userPrivateKey(user.password)
       delete user.password;
-      this.props.history.push('/admin/index');
-
+      this.props.userLoggedinOrRegistered("Registered")
       
+
+      let currentUser = snapshot.user.uid;
+      console.log(currentUser);
+      this.props.currentUserId(currentUser);
       // console.log(createdUser.uid);
-      user.uid = createdUser.user.uid;
-      // console.log(user.uid);
-      firebase.database().ref('userData/' + user.uid + '/').set(user)
-          .then(() => {
-              console.log("USER ADDED TO FIREBASE")
-  })
-  .catch((err) => {
-          // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-          // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
-          // console.log(err)
-          console.log('error',err.message);
+      user.uid = currentUser;
+      
+      console.log(user.uid);
+      console.log(user)
+     let db = firebase.firestore()
+     db.collection('userData').doc(currentUser).set(user)
+     .then(() => {
+      console.log("USER ADDED TO FIREBASE")
+      this.props.history.push('/admin/index');
 })
+
+.catch((err) => {
+  // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
+  // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
+  // console.log(err)
+  console.log('error',err.message);
+})
+//       db.ref('userData/' + currentUser + '/').set(user)
+//           .then(() => {
+//               console.log("USER ADDED TO FIREBASE")
+//   })
+//   .catch((err) => {
+//           // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
+//           // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
+//           // console.log(err)
+//           console.log('error',err.message);
+// })
 })
 .catch((err) => {
   // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
@@ -243,7 +262,8 @@ _onChangePassword(event){
 function mapStateToProp(state) {
   return ({
       // progressBarDisplay : state.root.progressBarDisplay,
-      errorMsg : state.root.errorMessage
+      errorMsg : state.root.errorMessage,
+      
   })
 }
 function mapDispatchToProp(dispatch) {
@@ -253,7 +273,20 @@ function mapDispatchToProp(dispatch) {
       },
       errorMessage: (message)=>{
           dispatch(errorMessage(message));
+      },
+      
+      currentUserId : (uid) => {
+        dispatch(getCurrentUserId(uid))
+      },
+      
+      userPrivateKey : (key) => {
+        dispatch(getUserPrivateKey(key))
+      }
+      ,
+      userLoggedinOrRegistered : (notify) => {
+        dispatch(getNotification(notify))
       }
   })
+
 }
 export default connect(mapStateToProp, mapDispatchToProp)(Register);

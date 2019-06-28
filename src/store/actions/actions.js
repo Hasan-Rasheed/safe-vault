@@ -162,13 +162,42 @@ export function getCurrentUserId(uid){
         dispatch({ type: 'CURRENT_USER_UID', payload: uid })
     }
 }
+export function isFileSelected(selection){
+    console.log(selection,"uiddddd")
+    return dispatch => {
+        dispatch({ type: 'IS_FILE_SELECTED', payload: selection })
+    }
+}
+export function getNotification(notify){
+    console.log(notify,"notification")
+    return dispatch => {
+        dispatch({ type: 'NOTIFICATION', payload: notify })
+    }
+}
+export function getFileNames(filenames){
+    console.log(filenames,"filenamesss")
+    return dispatch => {
+        dispatch({ type: 'FILE_NAMES', payload: filenames })
+    }
+}
+
+export function getUserPrivateKey(key){
+    console.log(key,"private Key")
+    return dispatch => {
+        dispatch({ type: 'Private_Key', payload: key })
+    }
+}
 
 export function errorMessage(msg) {
     return dispatch => {
         dispatch({ type: 'ERROR_MESSAGE', payload: msg })
     }
 }
-
+export function getFileHash(file_hash) {
+    return dispatch => {
+        dispatch({ type: 'File_Hash', payload: file_hash })
+    }
+}
 export function checkIfHashExist(hash){
     firebase.database().ref('userData/'+firebase.auth().currentUser.uid+'/fileHash/'+hash).on('name').then(snapshot=>{
         if(snapshot.exists()){

@@ -1,413 +1,324 @@
 import React, { Component } from "react";
-// import firebase  from 'firebase';
 import * as firebase from 'firebase/app';
-// import 'firebase/storage';
 import 'firebase/storage';
-import { Button } from "reactstrap";
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
-// import {} from '../../store/actions/actions';
 import { connect } from 'react-redux';
-import { getCurrentUserId , errorMessage } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames ,getFileHash , isFileSelected } from "../../store/actions/actions";
 import Download from './Download'
+import FileIcon, { defaultStyles } from 'react-file-icon';
+import { Container, Row, Col } from 'react-grid-system';
+import '../../assets/css/FileList.css';
+// reactstrap components
+import {
+  Button,
+  Card,
+  CardImg,
+  CardText,
+  CardBody,
+  CardLink,
+  CardTitle,
+  CardSubtitle,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+} from "reactstrap";
 
-
+const utf8 = require('utf8');
+var fileHash = '';
 var keySize = 256;
-var ivSize = 128;
 var iterations = 100;
-// var privateKey = ''
+var fileName = ''
+var fileContent = ''
+var fileLength = 0;
 
-class UploadFiles extends Component{
-  // static contextTypes = {
-  //   encrypt: PropTypes.func.isRequired,
-  //   decrypt: PropTypes.func.isRequired,
-  // }
-    constructor(props){
-        super(props);
-        // super(props)
-    this.state = { valid: false,
-                    file : "",
-                    fileData: "",
-                    encryptedFile : "",
-                    encryptionKey:"",
-                    fileHash: "",
-                  // image : null 
-                }
-                  
-        // this.onFileChange = this.onFileChange.bind(this)
-        // this.putDataInStorage = this.putDataInStorage.bind(this);
-        // this.downloadUrl = this.downloadUrl.bind(this);
-        this.onButtonClick = this.onButtonClick.bind(this);
-        
+class UploadFiles extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      buffer: '',
+      currentStatus: '',
+      HashStateMessage: '',
+      transactionHash: '',
+      open: false,
+      uid: this.props.currentUser,
+      privateKey: this.props.userPrivateKey,
+      fileList: [],
+      extensions: []
     }
- onFileChange(e) {
-     let files = e.target.files;
-    //  console.log(files);
-      this.setState({file : files});
-    //        let reader = new FileReader();
-    //  reader.readAsText(files[0]);
-    //  reader.onload = (e) => {
-    //      console.log("file data" , e.target.result)
-    //      this.setState({fileData : e.target.result})
-    //      console.log(this.state.fileData)
 
-    //     //  this.encrypt(e.target.result,privateKey);
 
-    // }
-    //     if (e.target.files[0]) {
-    //       const image = e.target.files[0]
-    //       this.setState(() => ({image}));
-    //       this.setState( {valid: true} )
+  }
+   async componentDidMount() {
+    let that = this;
+    console.log(this.state.privateKey, "pass")
+    console.log(this.props.currentUser, "checking dataa")
 
-    //     } else {
-    //       this.setState( {valid: false} )
-    //     }
+     await firebase.firestore().collection('userData').doc(this.state.uid).onSnapshot(function (snapshot) {
+      if (snapshot.exists) {
+
+      //  that.state.fileList = snapshot.data().files;
+       
+        that.setState({fileList: snapshot.data().files})
+         
+        console.log(that.state.fileList)
+        that.props.getFileNames(that.state.fileList)
+        fileLength = snapshot.data().files.length;
+        console.log(fileLength)
+
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
       }
-      onPrivateKeyChange(e) {
-        let key = e.target.value;
+    });
+  //  }
+    for (var i = 0; i < fileLength; i++) {
 
-        console.log(key);  
-        this.setState({encryptionKey :  key});
+      console.log(that.state.fileList[i])
+      // let fileList = that.state.fileList
+
+      // let extension = fileList[i].slice((fileList[i].lastIndexOf(".") - 1 >>> 0) + 2);
+      // this.setState({extensions: extension })
+      // console.log(this.state.extensions, "file extensions")
+
+
+
     }
-    
-    encrypt (msg, pass) {
-      var salt = CryptoJS.lib.WordArray.random(128/8);
-      
-      var key = CryptoJS.PBKDF2(pass, salt, {
-          keySize: keySize/32,
-          iterations: iterations
-        });
-    
-      var iv = CryptoJS.lib.WordArray.random(128/8);
-      
-      var encrypted = CryptoJS.AES.encrypt(msg, key, { 
-        iv: iv, 
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC
-        
-      });
-      
-      // salt, iv will be hex 32 in length
-      // append them to the ciphertext for use  in decryption
-      var transitmessage = salt.toString()+ iv.toString() + encrypted.toString();
-      return transitmessage;
-    }
-    
-    //  decrypt (transitmessage, pass) {
-    //   var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
-    //   var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
-    //   var encrypted = transitmessage.substring(64);
-      
-    //   var key = CryptoJS.PBKDF2(pass, salt, {
-    //       keySize: keySize/32,
-    //       iterations: iterations
-    //     });
-    
-    //   var decrypted = CryptoJS.AES.decrypt(encrypted, key, { 
-    //     iv: iv, 
-    //     padding: CryptoJS.pad.Pkcs7,
-    //     mode: CryptoJS.mode.CBC
-        
-    //   })
-    //   return decrypted;
-    // }
-    
-//  putDataInStorage(name,file){
-//     // preventDefault()
 
-//         firebase.storage.ref().child(name).put(file).then((snapshot)=>{
-//             console.log("data stored in storage: " +snapshot)
-//             this.downloadUrl()   
-//         }).catch(errr=>{
-//             console.log("data stored in storage: " +errr)
-//         })
-//     }
-
-// convertToBuffer = async (reader) => {
-//   console.log(reader.result , "hasassaas")
-//   const buffer = await Buffer.from(reader.result);
-//   console.log(buffer, "lollllllll");
-//   console.log(this.state.file);
-//   this.setState({file: buffer});
-//   console.log(this.state.file);
+    console.log(this.state.extensions);
+     
   
-// }
-
-  
-async onButtonClick() {
-  console.log(this.state.fileData);
-  let data = this.state.fileData;
-  let key = this.state.encryptionKey;
-  let encrypted = "";
-  let file = this.state.file;
-  let uid = this.props.currentUser;
-
-    //encrypting the data
-    console.log(file , "file object")
-    encrypted = this.encrypt(data,key);
-    console.log(encrypted);
-    this.setState({encryptedFile : encrypted});
-
-  var encryptedFile = new File([encrypted.toString()], "file.encrypted", {type: "text/plain"})
-
-  console.log(encryptedFile,"hellooo")
-  this.setState({file: encryptedFile})
-        // let eReader = new FileReader()
-        // eReader.readAsArrayBuffer(eFile)
-        // eReader.onloadend = (e) => {
-        //     this.convertToBuffer(eReader)
-        // }
-
-    //generating file hash
-      let hash = sha256(file[0].name)
-      console.log(hash);
-      this.setState({fileHash : hash });
-console.log(uid)
-var storageRef = firebase.storage().ref(uid)
-var uploadTask = await storageRef.child(hash).put(encryptedFile).then((snapshot)=>{
-  console.log("data stored in storage: " +snapshot)
-  // this.downloadUrl(hash)   
-}).catch(errr=>{
-  console.log("data stored in storage: " +errr)
-})
-
-// Since you mentioned your images are in a folder,
-// we'll create a Reference to that folder:
-console.log(uid)
-var storageRef = firebase.storage().ref(uid);
-
-
-// Now we get the references of these images
-storageRef.listAll().then(function(result) {
-  result.items.forEach(function(itemslist) {
-    // And finally display them
-    console.log("ooo")
-    displayImage(itemslist);
-  });
-}).catch(function(error) {
-  // Handle any errors
-});
-
-function displayImage(itemlist) {
-  itemlist.getDownloadURL().then(function(url) {
-    // TODO: Display the image on the UI
-    console.log(url,"listofItemssss")
-  }).catch(function(error) {
-
-    // Handle any errors
-    console.log("erorrrrrssss")
-  });
-}
-
-//  this.downloadUrl(hash);
-
-
-// console.log(JSON.stringify(firebase.storage))
-// uploadTask.on('state_change',
-// (snapshot) => {
-// console.log('hi');
-// }
-// ,(error) => {
-//   console.log(error);
-// },() => {
-//  firebase.storage.ref('files ').child(file[0].name).getDownloadURL().then(url =>{
-//    console.log(url)
-//  }) 
-// })
-// var storageRef = firebase.storage().ref();
-// var sRef = storageRef.child('images');
-//   firebase.storage.ref('Files').child(uid).put(file).then((snapshot)=>{
-//     console.log("data stored in storage: " +snapshot)
-//   })
-  
-  // encrypted = this.encrypt(data,key);
-  // console.log(encrypted);
-
-  // let hash = sha256(encrypted)
-  // console.log(hash);
-  // this.setState({fileHash : hash });
-
   }
 
 
-  // var eFile = new File([encrypted.toString()], "file.encrypted", { type: "text/plain" })
-  //       let eReader = new FileReader()
-  //       eReader.readAsArrayBuffer(eFile)
-  //       eReader.onloadend = (e) => {
-  //           this.convertToBuffer(eReader)
-  //       }
-      
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
+
+  encrypt(msg, pass) {
+    this.setState({ currentStatus: "Encrypting data. Please wait.." })
+
+    var salt = CryptoJS.lib.WordArray.random(128 / 8);
+    var key = CryptoJS.PBKDF2(pass, salt, {
+      keySize: keySize / 32,
+      iterations: iterations
+    });
+
+    var iv = CryptoJS.lib.WordArray.random(128 / 8);
+    var encrypted = CryptoJS.AES.encrypt(msg, key, {
+      iv: iv,
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+
+    });
+
+    var transitmessage = salt.toString() + iv.toString() + encrypted.toString();
+    return transitmessage;
+  }
+
+
+  onSaveData(event) {
+    event.preventDefault();
+
+    if (fileHash === '') {
+      alert("Please select file to upload")
+      return
+    }
+    console.log(this.state.privateKey, "password")
+    if (this.state.privateKey === '') {
+      alert("All the fields are required");
+      return
+    }
+    else {
+      this.uploadFile();
+    }
+  }
+
+
+  
+
+  uploadFile = async () => {
+    this.setState({ currentStatus: "Encrypting and uploading file. Please wait.." })
+    console.log(fileContent);
+    var encrypted = CryptoJS.AES.encrypt(fileContent, this.state.privateKey)
+
+    var eFile = new File([encrypted.toString()], "file.encrypted", { type: "text/plain" })
+    let eReader = new FileReader()
+    eReader.readAsArrayBuffer(eFile)
+    eReader.onloadend = (e) => {
+      this.convertToBuffer(eReader)
+    }
+
+    //generating file hash
+    console.log(fileName, "setting file name")
+    //  let fileHash = sha256(file[0].name)
+    console.log(fileHash);
+    // let hash = fileData.fileHash
+    // firebase.firestore().collection('userData').doc(uid).field
     
-  //  downloadUrl(hash){
-        // return dispatch => {
-      //       let uid = this.props.currentUser;
-      //       console.log(uid)
-      //       // let hash = this.state.fileHash
-      //   var storageRef = firebase.storage().ref(uid);
-      //   storageRef.child(hash).getDownloadURL().then(url=>{
-      //       console.log(url , "url is here")
-      //   //     // dispatch({ type: "FILE_URL", payload: url })
-      //   //     // dispatch({ type: "FILE_Name", payload: name })
+
+  };
+
+  captureFile = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const file = event.target.files[0]
+    fileName = file.name;
+    let reader = new window.FileReader()
+    reader.readAsDataURL(file)
+
+    reader.onloadend = (e) => {
+      fileContent = e.target.result;
+
+      fileHash = sha256(utf8.encode(fileName));
+      console.log(fileHash)
+      this.setState({ HashStateMessage: fileHash })
+
+    }
+
+  };
+
+  convertToBuffer = async (reader) => {
+    let uid = this.props.currentUser;
+    console.log(uid);
+    const buffer = await Buffer.from(reader.result);
+    this.setState({ buffer: buffer });
+    let file = this.state.buffer;
+    let that = this;
+    var storageRef = firebase.storage().ref(uid)
+    var uploadTask = await storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
+      console.log('Uploaded a Blob or File');
+      that.setState({ currentStatus: "File Uploaded" })
+      firebase.firestore().collection('userData').doc(this.state.uid).update({
+        files: firebase.firestore.FieldValue.arrayUnion(fileName)
+  
+      })
+      // that.setState({fileList : fileName});
+    }).catch(errr => {
+      console.log("data storage error " + errr)
+    })
+  };
+
+  handleLabelClick(filename){
     
-      //   }).catch(err=>{
-      //       console.log(err,"url error")
-      //   })
+    console.log(filename)
+    let file_Hash = sha256(utf8.encode(filename));
+    console.log(file_Hash)
+    this.props.getFileHash(file_Hash);
+    this.props.isFileSelected(true);
+    // <Download/>
+  }
 
-      //   var link = document.createElement("a");
-      //       link.href = this.url;
-      //       document.body.appendChild(link);
+  render() {
+    const {
+      encryptionKey,
+    } = this.state;
 
-      // var request = new XMLHttpRequest();
-      // request.open('GET', link.href, true);
-      // request.responseType = 'blob';
-      // request.onload = () => {
-      //     var eReader = new FileReader();
-      //     eReader.readAsText(request.response);
-      //     eReader.onload = (e) => {
-      //         this.setState({currentStatus: "Decrypting file. Please wait.."})
-      //         var decrypted = CryptoJS.AES.decrypt(e.target.result, privateKey).toString(CryptoJS.enc.Latin1);
-      //         var a = document.createElement("a");
-      //         a.href = decrypted;
-
-      //         if (!decrypted.toString().includes("data")) {
-      //             alert("Error in decryption. Most likely caused by the wrong private key.")
-      //             return;
-      //         }
-
-      //         let split1 = decrypted.toString().split("data:")
-      //         let split2 = split1[1].split(";base64")
-      //         let type = split2[0]
-
-      //         a.download = fileHash;
-      //         document.body.appendChild(a);
-      //         a.click();
-
-      //         this.setState({currentStatus: "File downloaded."})
-      //     };
-      // };
-      // request.send();
-    // }
-
-  //   onDownloadFile(event) {
-  //     event.preventDefault();
-  //     if (privateKey === '') {
-  //         alert("Incorrect Private key")
-  //         return
-  //     }
-
-  //     this.setState({currentStatus: "Downloading file. Please wait.."})
-  //     var link = document.createElement("a");
-  //     link.href = 'https://firebasestorage.googleapis.com/v0/b/safe-vault-with-tokens.appspot.com/o/' + fileHash + "?alt=media&token=234ab920-5365-45f9-8f23-37100eef24ad";
-  //     document.body.appendChild(link);
-
-  //     var request = new XMLHttpRequest();
-  //     request.open('GET', link.href, true);
-  //     request.responseType = 'blob';
-  //     request.onload = () => {
-  //         var eReader = new FileReader();
-  //         eReader.readAsText(request.response);
-  //         eReader.onload = (e) => {
-  //             this.setState({currentStatus: "Decrypting file. Please wait.."})
-  //             var decrypted = CryptoJS.AES.decrypt(e.target.result, privateKey).toString(CryptoJS.enc.Latin1);
-  //             var a = document.createElement("a");
-  //             a.href = decrypted;
-
-  //             if (!decrypted.toString().includes("data")) {
-  //                 alert("Error in decryption. Most likely caused by the wrong private key.")
-  //                 return;
-  //             }
-
-  //             let split1 = decrypted.toString().split("data:")
-  //             let split2 = split1[1].split(";base64")
-  //             let type = split2[0]
-
-  //             a.download = fileHash;
-  //             document.body.appendChild(a);
-  //             a.click();
-
-  //             this.setState({currentStatus: "File downloaded."})
-  //         };
-  //     };
-  //     request.send();
-  // }
-    
-render(){
-  const {
-    encryptionKey,
-  } = this.state;
-
-
-  const {
-    encrypt,
-    decrypt,
-  } = this.context;
-
-    return(
+    return (
       <div>
-<form className='add-product'>
-        <div className='form-group'>
-          <input
-            type='file'
-            ref='myFile'
-            multiple="multiple"
-            onChange={(e) => this.onFileChange(e)}
-            className='form-control' />
-             <input
-            type='text'
-            placeholder =  'enter you private key here to encrypt'
-            onChange = {(e) => this.onPrivateKeyChange(e)}
-            className='form-control' />
-            
-            
-        </div>
-        
-        <Button
-        //   type='button'
-          // disabled={!this.state.valid}
-          color = "primary" onClick = {(e) => this.onButtonClick()}>
-          Upload
+
+        <form className='add-product' onSubmit={this.onSaveData.bind(this)}>
+          <div className='form-group'>
+            <input
+              type='file'
+              ref='myFile'
+              multiple="multiple"
+              // onChange={(e) => this.onFileChange(e)}
+              onChange={this.captureFile}
+              className='form-control' />
+
+          </div>
+
+          <Button
+
+            color="primary"
+            type="submit" name="action"
+            title='submit'
+
+          >
+            Upload
         </Button>
-      </form>
+          <br />
+          <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}</label>
+          <br />
 
+        </form>
 
-      {/* <Download/> */}
+        <br />
+       
+        <Container>
+        <Row className = "card-spacing">
+          
+             
+ {     
+  this.state.fileList.map((file ) => {
+          return (
+               <Col className = "card-spacing" lg={2} md={2} >
+               <div>
+                 <Card className = "card-background">
+                 <CardBody>
+                   <FileIcon color = "lightblue" className = "card-icon"  size={50} />
+                   <CardText className="file-name" onClick ={() => this.handleLabelClick(file)}>{file}</CardText>
+                   
+                   {/* <CardTitle >{file}</CardTitle> */}
+                 </CardBody>
+                 </Card>
+               </div>
+           </Col>
+       )
 
-
+    })
+  } 
+  </Row>
+  </Container>
+ <Download/>
+  
       </div>
+ 
     );
-      // let filename = file[0].name;
-      // <label value = {this.state.file[0].name} ></label>
-      // <Button
-      //   //   type='button'
-      //     // disabled={!this.state.valid}
-      //     color = "primary" onClick = {(e) => this.onDownloadButtonClick()}>
-      //     Upload
-      //   </Button>
-
-    
-}
+  }
 }
 
 function mapStateToProp(state) {
   console.log(state)
   return ({
-      // progressBarDisplay: state.root.progressBarDisplay,
-      errorMsg : state.root.errorMessage,
-      currentUser : state.root.userID
+    // progressBarDisplay: state.root.progressBarDisplay,
+    errorMsg: state.root.errorMessage,
+    currentUser: state.root.userID,
+    userPrivateKey : state.root.userprivatekey,
+    notification: state.root.notify
   })
 }
 
 function mapDispatchToProp(dispatch) {
+  
   return ({
-      signOut: (user) => {
-          // dispatch(signoutAction())
-      },
-      errorMessage: (message)=>{
-          dispatch(errorMessage(message));
-      },
-      getCurrentUserId : (user) => {
-        dispatch(getCurrentUserId(user));
-      }
+    signOut: (user) => {
+      // dispatch(signoutAction())
+    },
+    errorMessage: (message) => {
+      dispatch(errorMessage(message));
+    },
+    getCurrentUserId: (user) => {
+      dispatch(getCurrentUserId(user));
+    },
+    getFileNames: (filenames) => {
+      dispatch(getFileNames(filenames));
+    },
+    getFileHash: (file_hash) => {
+      dispatch(getFileHash(file_hash));
+    },
+    isFileSelected: (selection) => {
+      dispatch(isFileSelected(selection));
+    }
+    
   })
 }
 export default connect(mapStateToProp, mapDispatchToProp)(UploadFiles);

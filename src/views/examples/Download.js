@@ -3,183 +3,169 @@ import React, { Component } from "react";
 import * as firebase from 'firebase/app';
 // import 'firebase/storage';
 import 'firebase/storage';
-import { Button } from "reactstrap";
+// import { Button } from "reactstrap";
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 // import {} from '../../store/actions/actions';
 import { connect } from 'react-redux';
 import { getCurrentUserId, errorMessage } from "../../store/actions/actions";
+import FileIcon, { defaultStyles } from 'react-file-icon';
+
+import {
+    Button,
+    Card,
+    CardImg,
+    CardText,
+    CardBody,
+    CardLink,
+    CardTitle,
+    CardSubtitle,
+    FormGroup,
+    Form,
+    Input,
+    InputGroupAddon,
+    InputGroupText,
+    InputGroup,
+    Row,
+    Col
+  } from "reactstrap";
+import { isLabeledStatement } from "typescript";
+
+
+// var keySize = 256;
+// var ivSize = 128;
+// var iterations = 100;
 
 
 
+var privateKey = ''
+
+// Decryption parameters
 var keySize = 256;
-var ivSize = 128;
 var iterations = 100;
+var fileHash = ''
 
 class DownloadFile extends Component {
 
-    constructor(props) {
-        super(props);
-        // super(props)
-        this.state = {
-            // file : "",
-            fileData: "",
-            encryptedFile: "",
-            encryptionKey: "",
-            fileHash: "",
-            privateKey: "",
-            fileUrl: "",
 
-            // image : null 
-        }
+constructor(props) {
+    super(props);
+    this.state = {
+        value: '',
+        currentStatus: '',
+        fileUrl: "",
+        fHash:'',
+        fileList : this.props.fileNames,
+        privateKey: this.props.userPrivateKey,
+        isButtonDisabled: this.props.file_selected
 
-        this.onDownloadFile = this.onDownloadFile.bind(this);
-        this.onPrivateKeyChange = this.onPrivateKeyChange.bind(this);
-        this.decrypt = this.decrypt.bind(this);
-        this.onButtonClick = this.onButtonClick.bind(this);
     }
-    onPrivateKeyChange(e) {
-        let key = e.target.value;
+}
 
-        console.log(key);
-        this.setState({ privateKey: key });
-    }
-    decrypt(transitmessage, pass) {
-        var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
-        var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
-        var encrypted = transitmessage.substring(64);
+decrypt(transitmessage, pass) {
 
-        var key = CryptoJS.PBKDF2(pass, salt, {
-            keySize: keySize / 32,
-            iterations: iterations
-        });
+    var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
+    var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
+    var encrypted = transitmessage.substring(64);
 
-        var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-            iv: iv,
-            padding: CryptoJS.pad.Pkcs7,
-            mode: CryptoJS.mode.CBC
-        })
-        return decrypted;
-    }
-    // async getData() {
-    //     const accounts = await web3.eth.getAccounts();
-    //     await StorageController.methods
-    //         .data(accounts[0]).call().then(Hash => {
-    //             fileHash = Hash;
-    //         });
-    // }
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: keySize / 32,
+        iterations: iterations
+    });
 
-    // async onReadData(event) {
-    //     event.preventDefault();
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+        iv: iv,
+        padding: CryptoJS.pad.Pkcs7,
+        mode: CryptoJS.mode.CBC
+    })
+    return decrypted;
+}
 
-    //     await this.getData();
-    //     this.setState({currentStatus: "Reading data.."})
-    // }
+async getData() {
+    fileHash = this.props.file_hash;
+   
+}
 
-    async onButtonClick(event) {
-        // await this.onReadData(event);
-        this.onDownloadFile(event);
-    }
-    async onDownloadFile() {
-        // event.preventDefault();
-        if (this.state.privateKey === '') {
-            alert("Incorrect Private key")
-            return
-        }
+async onReadData(event) {
+    event.preventDefault();
 
+    await this.getData();
+    this.setState({currentStatus: "Reading data.."})
+}
 
-        let uid = this.props.currentUser;
-        console.log(uid)
-        let hash = "9969bf81092003764d521fb7455d68c6633765713251ae3bc21092af9f254469";
-        var storageRef = firebase.storage().ref(uid);
-        await storageRef.child(hash).getDownloadURL().then(url => {
-            this.setState({ fileUrl: url })
-            console.log(this.state.fileUrl, "url is here")
-            //     // dispatch({ type: "FILE_URL", payload: url })
-            //     // dispatch({ type: "FILE_Name", payload: name })
+async onButtonClick(event) {
+    await this.onReadData(event);
+    this.onDownloadFile(event);
+}
 
-        }).catch(err => {
-            console.log(err, "url error")
-        })
-        console.log(this.state.fileUrl, "url outside")
-        var link = document.createElement("a");
-        link.href = this.state.fileUrl;
-        console.log(link.href, "link address")
-        document.body.appendChild(link);
+ async onDownloadFile(event) {
 
-        var request = new XMLHttpRequest();
-        request.open('GET', link.href, true);
-        request.responseType = 'blob';
-        request.onload = () => {
-            var eReader = new FileReader();
-            eReader.readAsText(request.response);
-            eReader.onload = (e) => {
-                //   this.setState({currentStatus: "Decrypting file. Please wait.."})
-                console.log(this.state.privateKey);
-                console.log(e.target.result)
-                // console.log(typeof CryptoJS.AES.decrypt(e.target.result, this.state.privateKey).toString(CryptoJS.enc.Latin1))
-                // var decrypted =   CryptoJS.AES.decrypt(e.target.result, this.state.privateKey).toString(CryptoJS.enc.Latin1);
-                console.log(this.decrypt(e.target.result, this.state.privateKey));
-                var decrypted = this.decrypt(e.target.result, this.state.privateKey);
-                // console.log(decrypted, "msgsssssssssssssss")
-                var a = document.createElement("a");
-                a.href = decrypted;
+    event.preventDefault();
 
+    let uid = this.props.currentUser;
+    var storageRef =  firebase.storage().ref(uid)
+    await storageRef.child(fileHash).getDownloadURL().then(url => {
+       this.setState({ fileUrl: url })
+   }).catch(err => {
+       console.log(err, "url error")
+   })
 
-                if (decrypted.toString().includes("data")) {
-                    alert("Error in decryption. Most likely caused by the wrong private key.")
-                    return;
-                }
+    this.setState({currentStatus: "Downloading file. Please wait.."})
+    var link = document.createElement("a");
+    console.log(uid, "download uuidddddd")
+    console.log(fileHash,'filehashh')
+    link.href = this.state.fileUrl    
+    console.log(link.href,"link")
+    document.body.appendChild(link);
 
-                
-                // let split1 = decrypted.toString().split("data:")
-                // let split2 = split1[1].split(";base64")
-                // let type = split2[0]
+    var request = new XMLHttpRequest();
+    request.open('GET', link.href, true);
+    request.responseType = 'blob';
+    request.onload = () => {
+        var eReader = new FileReader();
+        eReader.readAsText(request.response);
+        eReader.onload = (e) => {
+            this.setState({currentStatus: "Decrypting file. Please wait.."})
+            var decrypted = CryptoJS.AES.decrypt(e.target.result, this.state.privateKey).toString(CryptoJS.enc.Latin1);
+            var a = document.createElement("a");
+            a.href = decrypted;
 
-                a.download = hash;
-                document.body.appendChild(a);
-                a.click();
-                console.log("file")
-                //   this.setState({currentStatus: "File downloaded."})
-            };
+            if (!decrypted.toString().includes("data")) {
+                alert("Make sure your CORS is enabled")
+                return;
+            }
+
+            let split1 = decrypted.toString().split("data:")
+            let split2 = split1[1].split(";base64")
+            let type = split2[0]
+
+            a.download = fileHash;
+            document.body.appendChild(a);
+            a.click();
+
+            this.setState({currentStatus: "File downloaded."})
         };
-        request.send();
+    };
+    request.send();
+}
+
+render() {
+    return(
+<div>
+    <br/>
+    {
+        // (this.props.diabled) ? () : ()
     }
-
-
-
-    render() {
-        const {
-            encryptionKey,
-        } = this.state;
-
-
-        const {
-            encrypt,
-            decrypt,
-        } = this.context;
-
-        return (
-            <div>
-                <h1>Here you can download your file  </h1>
-                <label value="your file name"></label>
-                <input
-                    type='text'
-                    placeholder='enter you private key here to decrypt'
-                    onChange={(e) => this.onPrivateKeyChange(e)}
-                    className='form-control' />
-
-                <Button color="primary" onClick={(e) => this.onButtonClick()}>
-
-                    Download
-
-                </Button>
-
-            </div>
-        );
-
-
-
+    <label style={{ marginLeft: '400px', color: 'blue'}}>{this.state.currentStatus}</label>
+    <br/>
+<Button onClick={this.onButtonClick.bind(this)}
+                                                className="btn waves-effect waves-light"
+                                                style={{backgroundColor: '#145CFF', marginLeft: '400px', color: 'white'}}>Download
+                                            File</Button>
+                                            
+        
+        </div>
+    );
     }
 }
 
@@ -188,7 +174,11 @@ function mapStateToProp(state) {
     return ({
         // progressBarDisplay: state.root.progressBarDisplay,
         errorMsg: state.root.errorMessage,
-        currentUser: state.root.userID
+        currentUser: state.root.userID,
+        userPrivateKey : state.root.userprivatekey,
+        fileNames : state.root.filenames,
+        file_hash : state.root.file_hash,
+        file_selected : state.root.selection
     })
 }
 

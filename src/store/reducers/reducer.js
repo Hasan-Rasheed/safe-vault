@@ -6,8 +6,11 @@ const INITIAL_STATE = {
     // type: '',
     errorMessage : '',
     file_url : '',
-    file_name: '',
-    file_hash: ''
+    file_names: '',
+    file_hash: '',
+    userprivatekey:[],
+    notify:'',
+    selection:false
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -39,21 +42,41 @@ export default (state = INITIAL_STATE, action) => {
                 errorMessage : action.payload
             })
 
+            case 'Private_Key':
+                console.log(action.payload)
+                return({
+                    ...state,
+                    userprivatekey : action.payload
+                })
+
             case 'File_URL':
             return ({
                 ...state,
                 file_url : action.payload
             })
-            case 'File_Name':
+            case 'FILE_NAMES':
+                console.log(action.payload)
             return ({
+                
                 ...state,
-                file_name : action.payload
+                file_names : action.payload
             })
             case 'File_Hash':
             return ({
                 ...state,
                 file_hash : action.payload
             })
+            case 'NOTIFICATION':
+            return ({
+                ...state,
+                notify : action.payload
+            })
+            case 'IS_FILE_SELECTED':
+                return({
+                    ...state,
+                    selection : action.payload
+
+                })
             // case 'TYPE':
             // { console.log(action.payload) }
             // return ({

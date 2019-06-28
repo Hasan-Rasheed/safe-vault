@@ -1,7 +1,7 @@
 import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import { signinAction, errorMessage, getCurrentUserId } from '../../store/actions/actions';
+import { signinAction, errorMessage, getCurrentUserId,getUserPrivateKey , getNotification} from '../../store/actions/actions';
 import firebase from 'firebase';
 import history from '../../history';
 
@@ -30,14 +30,16 @@ class Login extends Component {
     super(props);
     this.state = {
         email: '',
-        password: ''
+        password: '',
+        privateKey: ''
     }
     this.signin = this.signin.bind(this);
     this._onChangeEmail = this._onChangeEmail.bind(this);
     this._onChangePassword = this._onChangePassword.bind(this);
 }
 
-signin(event) {  //Method that dispatch an action
+signin(event) { 
+  let that =this //Method that dispatch an action
     event.preventDefault();
     if((this.state.email === '' || this.state.password === ''))
     {
@@ -52,16 +54,27 @@ signin(event) {  //Method that dispatch an action
         // this.props.history.push('/admin/index');
         firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then((snapshot)=> {
-          this.props.history.push('/admin/index');
-
+          // this.props.history.push('/admin/index');
+          this.state.privateKey = this.state.password;
           let currentUser = snapshot.user.uid;
           console.log(snapshot.user.uid);
           this.props.currentUserId(snapshot.user.uid);
+          console.log(user.password)
+          this.props.userPrivateKey(user.password);
         //  let currentuser =  firebase.auth().snapshot;
         //  console.log(currentuser);
         // var userId = firebase.auth().currentUser.uid;
-return firebase.database().ref('userData/' + currentUser ).once('value').then(function(snapshot) {
- console.log(snapshot.val().userName);
+return firebase.firestore().collection('userData').doc(currentUser).get().then(function(snapshot) {
+ console.log(snapshot);
+ if (snapshot.exists) {
+  //  this.props.userLoggedinOrRegistered("LoggedIn");
+  console.log("Document data:", snapshot.data().userName);
+            that.props.history.push('/admin/index');
+
+} else {
+  // doc.data() will be undefined in this case
+  console.log("No such document!");
+}
  
   // ...
 });
@@ -221,6 +234,7 @@ function mapStateToProp(state) {
       // progressBarDisplay: state.root.progressBarDisplay,
       errorMsg : state.root.errorMessage,
       userName : state.root.userName,
+      // private_Key : state.root.userprivatekey
       // currentuserId : state.root.currentUserId
       
   })
@@ -239,6 +253,12 @@ function mapDispatchToProp(dispatch) {
       },
       currentUserId : (uid) => {
         dispatch(getCurrentUserId(uid))
+      },
+      userPrivateKey : (key) => {
+        dispatch(getUserPrivateKey(key))
+      },
+      userLoggedinOrRegistered : (notify) => {
+        dispatch(getNotification(notify))
       }
   })
 }
