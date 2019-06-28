@@ -48,7 +48,8 @@ class UploadFiles extends Component {
       uid: this.props.currentUser,
       privateKey: this.props.userPrivateKey,
       fileList: [],
-      extensions: []
+      extensions: [],
+      bgColor : "#e4ebee"
     }
 
 
@@ -76,20 +77,20 @@ class UploadFiles extends Component {
       }
     });
   //  }
-    for (var i = 0; i < fileLength; i++) {
+    // for (var i = 0; i < fileLength; i++) {
 
-      console.log(that.state.fileList[i])
-      // let fileList = that.state.fileList
+    //   console.log(that.state.fileList[i])
+    //   let fileList = that.state.fileList
 
-      // let extension = fileList[i].slice((fileList[i].lastIndexOf(".") - 1 >>> 0) + 2);
-      // this.setState({extensions: extension })
-      // console.log(this.state.extensions, "file extensions")
+    //   let extension = fileList[i].slice((fileList[i].lastIndexOf(".") - 1 >>> 0) + 2);
+    //   this.setState({extensions: extension })
+    //   console.log(this.state.extensions, "file extensions")
 
 
 
-    }
+    // }
 
-    console.log(this.state.extensions);
+    // console.log(this.state.extensions);
      
   
   }
@@ -213,7 +214,15 @@ class UploadFiles extends Component {
     console.log(file_Hash)
     this.props.getFileHash(file_Hash);
     this.props.isFileSelected(true);
+    this.setState({bgColor: "blue"})
     // <Download/>
+  }
+
+  fileExtension = (file) => {
+    let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
+    return (
+     <FileIcon style={{ align :'center'}} color = "#e4ebee" extension = {extension} {...defaultStyles[extension]} className = "card-icon"  size={50} /> 
+    )
   }
 
   render() {
@@ -222,7 +231,7 @@ class UploadFiles extends Component {
     } = this.state;
 
     return (
-      <div>
+      <div style={{ margin: "25px 100px" }}>
 
         <form className='add-product' onSubmit={this.onSaveData.bind(this)}>
           <div className='form-group'>
@@ -260,12 +269,13 @@ class UploadFiles extends Component {
  {     
   this.state.fileList.map((file ) => {
           return (
+           
                <Col className = "card-spacing" lg={2} md={2} >
                <div>
-                 <Card className = "card-background">
+                 <Card className = "card-background" styles={ { backgroundColor: this.state.bgColor }} onClick ={() => this.handleLabelClick(file)}>
                  <CardBody>
-                   <FileIcon color = "lightblue" className = "card-icon"  size={50} />
-                   <CardText className="file-name" onClick ={() => this.handleLabelClick(file)}>{file}</CardText>
+                   {this.fileExtension(file)}
+                   <CardText className="file-name" >{file}</CardText>
                    
                    {/* <CardTitle >{file}</CardTitle> */}
                  </CardBody>
@@ -273,8 +283,11 @@ class UploadFiles extends Component {
                </div>
            </Col>
        )
+              }
+            )
+  
 
-    })
+    
   } 
   </Row>
   </Container>

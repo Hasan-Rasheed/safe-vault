@@ -160,7 +160,7 @@ render() {
     <br/>
 <Button onClick={this.onButtonClick.bind(this)}
                                                 className="btn waves-effect waves-light"
-                                                style={{backgroundColor: '#145CFF', marginLeft: '400px', color: 'white'}}>Download
+                                                style={{backgroundColor: '#145CFF', margin: ' 0 520px', color: 'white'}}>Download
                                             File</Button>
                                             
         

@@ -1,7 +1,7 @@
 import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import { signinAction, errorMessage, getCurrentUserId,getUserPrivateKey , getNotification} from '../../store/actions/actions';
+import { signinAction, errorMessage, getCurrentUserId,getUserPrivateKey , getNotification , updateUserName} from '../../store/actions/actions';
 import firebase from 'firebase';
 import history from '../../history';
 
@@ -64,11 +64,13 @@ signin(event) {
         //  let currentuser =  firebase.auth().snapshot;
         //  console.log(currentuser);
         // var userId = firebase.auth().currentUser.uid;
+        let that = this;
 return firebase.firestore().collection('userData').doc(currentUser).get().then(function(snapshot) {
  console.log(snapshot);
  if (snapshot.exists) {
   //  this.props.userLoggedinOrRegistered("LoggedIn");
   console.log("Document data:", snapshot.data().userName);
+  that.props.updateUserName(snapshot.data().userName);
             that.props.history.push('/admin/index');
 
 } else {
@@ -209,13 +211,7 @@ componentWillMount(){
               </a>
             </Col>
             <Col className="text-right" xs="6">
-              {/* <a
-                className=
-                href="#pablo"
-                onClick={e => e.preventDefault()}
-              >
-                <small>Create new account</small>
-              </a> */}
+             
               <NavLink className="text-light" to="/auth/register" tag={Link}>
                    
                     <small>Create new account</small>
@@ -233,7 +229,7 @@ function mapStateToProp(state) {
   return ({
       // progressBarDisplay: state.root.progressBarDisplay,
       errorMsg : state.root.errorMessage,
-      userName : state.root.userName,
+      // userName : state.root.userName,
       // private_Key : state.root.userprivatekey
       // currentuserId : state.root.currentUserId
       
@@ -248,7 +244,7 @@ function mapDispatchToProp(dispatch) {
           dispatch(errorMessage(message));
       },
       updateUserName: (user) => {
-        dispatch(signinAction(user));
+        dispatch(updateUserName(user));
 
       },
       currentUserId : (uid) => {

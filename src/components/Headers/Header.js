@@ -1,13 +1,17 @@
 import React from "react";
 
 // reactstrap components
-import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import { Card, CardBody, CardTitle, Container, Row, Col , Navbar} from "reactstrap";
 
 class Header extends React.Component {
   render() {
     return (
       <>
-        <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
+       {/* <Navbar
+          // className="navbar-top navbar-horizontal navbar-dark"
+          expand="md"
+        /> */}
+        <div className="header bg-gradient-info pb-5 pt-4 pt-md-3">
           {/* <Container fluid>
             <div className="header-body"> *
               {/* Card stats *

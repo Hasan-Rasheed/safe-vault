@@ -6,7 +6,7 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import AdminFooter from "components/Footers/AdminFooter";
 import Login from '../views/examples/Login';
-import Sidebar from "components/Sidebar/Sidebar";
+
 import UploadFiles from '../views/examples/UploadFiles';
 import routes from "routes.js";
 
@@ -52,15 +52,7 @@ class Admin extends React.Component {
   render() {
     return (
       <>
-        <Sidebar
-          {...this.props}
-          routes={routes}
-          logo={{
-            innerLink: "/admin/index",
-            // imgSrc: require("assets/img/brand/argon-react.png"),
-            // imgAlt: "..."
-          }}
-        />
+        
         <div className="main-content" ref="mainContent">
           <AdminNavbar/>
           {/* <UploadFiles/> */}

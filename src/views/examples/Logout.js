@@ -2,7 +2,7 @@ import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import { signinAction,signoutAction, errorMessage } from '../../store/actions/actions';
-
+// import history from '../../history';
 import firebase from 'firebase';
 import history from '../../history';
 
@@ -27,6 +27,7 @@ constructor(props) {
         });
     }
 }
+
 function mapStateToProp(state) {
     return ({
         // progressBarDisplay: state.root.progressBarDisplay,

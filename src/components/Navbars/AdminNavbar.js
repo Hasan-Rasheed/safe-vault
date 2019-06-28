@@ -1,6 +1,8 @@
 import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
+import firebase from 'firebase'
+import history from '../../history';
 
 // reactstrap components
 import {
@@ -22,6 +24,27 @@ import {
 import { updateUserName } from "../../store/actions/actions";
 
 class AdminNavbar extends Component {
+  constructor(props) {
+    super(props);
+    this.signOut = this.signOut.bind(this);
+
+}   
+
+  signOut(){
+    
+    let that =this;
+        firebase.auth().signOut().then(function () {
+            // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
+            // dispatch({ type: "IS_LOGIN", payload: false })
+            // Sign-out successful.
+            // history.push('/signin');
+            console.log("sign out successfully")
+            console.log(this.props.updateUserName)
+            // that.props.history.push('/auth/login');
+        }, function (error) {
+            // An error happened.
+        });
+    }
   render() {
     return (
       <>
@@ -29,9 +52,9 @@ class AdminNavbar extends Component {
           <Container fluid>
             <Link
               className="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block"
-              to="/"
+              to="/admin/index"
             >
-              {this.props.brandText}
+              <span></span>
             </Link>
             {/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
               <FormGroup className="mb-0">
@@ -49,15 +72,11 @@ class AdminNavbar extends Component {
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
                   <Media className="align-items-center">
-                    <span className="avatar avatar-sm rounded-circle">
-                      <img
-                        alt="..."
-                        src={require("assets/img/theme/team-4-800x800.jpg")}
-                      />
-                    </span>
+                  
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        {this.props.updateUserName}
+                     
+                    {this.props.updateUserName}
                       </span>
                     </Media>
                   </Media>
@@ -83,7 +102,7 @@ class AdminNavbar extends Component {
                     <span>Support</span>
                   </DropdownItem> */}
                   {/* <DropdownItem divider /> */}
-                  <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
+                  <DropdownItem href="/auth/login" onClick={() => {this.signOut()}}>
                     <i className="ni ni-user-run" />
                     <span>Logout</span>
                   </DropdownItem>
@@ -100,7 +119,7 @@ function mapStateToProp(state) {
   return ({
       // progressBarDisplay: state.root.progressBarDisplay,
       errorMsg : state.root.errorMessage,
-      updateUserName : state.root.updateUserName
+      updateUserName : state.root.userName
   })
 }
 function mapDispatchToProp(dispatch) {

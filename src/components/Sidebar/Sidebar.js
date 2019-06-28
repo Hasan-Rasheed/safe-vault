@@ -114,7 +114,7 @@ class Sidebar extends Component {
           >
             <span className="navbar-toggler-icon" />
            </button>
-           Brand
+           
            {logo ? (
             <NavbarBrand className="pt-0" {...navbarBrandProps}>
               <img
@@ -255,7 +255,7 @@ class Sidebar extends Component {
             </Nav> */}
           </Collapse>
         </Container>
-      // </Navbar>
+       </Navbar>
     );
   }
 }

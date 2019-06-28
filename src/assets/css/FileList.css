@@ -21,11 +21,14 @@
 
 .card-background{
     padding-top: 1em;
-    background-color: #dfe5e8
+    /* background-color: #e4ebee; */
+    
 }
-.file-name:visited{
-    background-color:#a978d6
+.card-background:hover{
+
+   cursor : pointer
 }
+
 .card-icon{
     text-align: center;
 }

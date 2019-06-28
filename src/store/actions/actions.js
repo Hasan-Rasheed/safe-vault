@@ -137,9 +137,9 @@ export function putHashInDatabase(hash,url,fileName) {
 }
 } 
 
-export function updateUserName(snapshot) {
+export function updateUserName(userName) {
     return dispatch => {
-        dispatch({ type: "User_Name", payload: snapshot.user.userName });
+        dispatch({ type: "USER_NAME", payload: userName });
 
     }
 }
