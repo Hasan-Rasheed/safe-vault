@@ -31,7 +31,8 @@ class Login extends Component {
     this.state = {
         email: '',
         password: '',
-        privateKey: ''
+        privateKey: '',
+        loginError: '',
     }
     this.signin = this.signin.bind(this);
     this._onChangeEmail = this._onChangeEmail.bind(this);
@@ -75,7 +76,6 @@ return firebase.firestore().collection('userData').doc(currentUser).get().then(f
 
 } else {
   // doc.data() will be undefined in this case
-  console.log("No such document!");
 }
  
   // ...
@@ -88,6 +88,8 @@ return firebase.firestore().collection('userData').doc(currentUser).get().then(f
         // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
         // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
         console.log(err.message);
+        this.setState({loginError: 'Invalid Email Address or Password'})
+
     })
         // .then((snapshot)=>{
         //   console.log(snapshot);
@@ -177,30 +179,19 @@ componentWillMount(){
                     <Input placeholder="Password" type="password"  value={this.state.password} onChange={this._onChangePassword} validate/>
                   </InputGroup>
                 </FormGroup>
-                <div className="custom-control custom-control-alternative custom-checkbox">
-                  <input
-                    className="custom-control-input"
-                    id=" customCheckLogin"
-                    type="checkbox"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor=" customCheckLogin"
-                  >
-                    <span className="text-muted">Remember me</span>
-                  </label>
-                </div>
+                
                 <div className="text-center">
                   <Button className="my-4" color="primary" type="button" onClick = {this.signin}>
                     Sign in
                   </Button>
                   {/* <Link to='/'>Be awesome, join our community!</Link> */}
-                  <div><p style = {{color : "red"}}>{this.props.errorMsg}</p></div>
+                  <br/>
+                  <span style = {{color : "red" ,fontweight: 'bold', fontSize: '15px'}}>{this.state.loginError}</span>
                 </div>
               </Form>
             </CardBody>
           </Card>
-          <Row className="mt-3">
+          {/* <Row className="mt-3">
             <Col xs="6">
               <a
                 className="text-light"
@@ -217,7 +208,7 @@ componentWillMount(){
                     <small>Create new account</small>
                   </NavLink>
             </Col>
-          </Row>
+          </Row> */}
         </Col>
       </>
     );

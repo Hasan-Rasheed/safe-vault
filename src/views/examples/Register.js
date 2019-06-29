@@ -225,7 +225,7 @@ _onChangePassword(event){
                     <span className="text-success font-weight-700">strong</span>
                   </small>
                 </div> */}
-                <Row className="my-4">
+                {/* <Row className="my-4">
                   <Col xs="12">
                     <div className="custom-control custom-control-alternative custom-checkbox">
                       <input
@@ -246,7 +246,7 @@ _onChangePassword(event){
                       </label>
                     </div>
                   </Col>
-                </Row>
+                </Row> */}
                 <div className="text-center">
                   <Button className="mt-4" color="primary" type="button" onClick = {this.signup}>
                     Create account

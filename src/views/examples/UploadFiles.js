@@ -49,7 +49,8 @@ class UploadFiles extends Component {
       privateKey: this.props.userPrivateKey,
       fileList: [],
       extensions: [],
-      bgColor : "#e4ebee"
+      // bgColor : "#e4ebee"
+      active: null
     }
 
 
@@ -208,16 +209,29 @@ class UploadFiles extends Component {
   };
 
   handleLabelClick(filename){
+
+    if (this.state.active === filename) {
+      this.setState({active : null})
+    } else {
+      this.setState({active : filename})
+    }
     
     console.log(filename)
     let file_Hash = sha256(utf8.encode(filename));
     console.log(file_Hash)
     this.props.getFileHash(file_Hash);
     this.props.isFileSelected(true);
-    this.setState({bgColor: "blue"})
+    // this.setState({bgColor: "blue"})
+    
     // <Download/>
   }
-
+    // console.log(filename)
+  myColor(filename) {
+    if (this.state.active === filename) {
+      return "#b2b2e0";
+    }
+    return "";
+  }
   fileExtension = (file) => {
     let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
     return (
@@ -272,7 +286,7 @@ class UploadFiles extends Component {
            
                <Col className = "card-spacing" lg={2} md={2} >
                <div>
-                 <Card className = "card-background" styles={ { backgroundColor: this.state.bgColor }} onClick ={() => this.handleLabelClick(file)}>
+                 <Card className = "card-background" style={ { backgroundColor: this.myColor(file)}} onClick ={() => this.handleLabelClick(file)}>
                  <CardBody>
                    {this.fileExtension(file)}
                    <CardText className="file-name" >{file}</CardText>

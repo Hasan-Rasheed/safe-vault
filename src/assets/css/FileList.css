@@ -10,7 +10,7 @@
     white-space: nowrap;
     font-size: 0.9rem;
     padding-top: 10px;
-    text-align: center;
+    /* text-align: center; */
     color: rgba(22, 21, 21, 0.91)
     
 }
@@ -30,7 +30,7 @@
 }
 
 .card-icon{
-    text-align: center;
+    /* text-align: center; */
 }
 .card-spacing{
     padding-top: 1em;

@@ -28,7 +28,7 @@ import {
     InputGroup,
     Row,
     Col
-  } from "reactstrap";
+} from "reactstrap";
 import { isLabeledStatement } from "typescript";
 
 
@@ -48,124 +48,124 @@ var fileHash = ''
 class DownloadFile extends Component {
 
 
-constructor(props) {
-    super(props);
-    this.state = {
-        value: '',
-        currentStatus: '',
-        fileUrl: "",
-        fHash:'',
-        fileList : this.props.fileNames,
-        privateKey: this.props.userPrivateKey,
-        isButtonDisabled: this.props.file_selected
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: '',
+            currentStatus: '',
+            fileUrl: "",
+            fHash: '',
+            fileList: this.props.fileNames,
+            privateKey: this.props.userPrivateKey,
+            isButtonDisabled: this.props.file_selected
+
+        }
+    }
+
+    decrypt(transitmessage, pass) {
+
+        var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
+        var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
+        var encrypted = transitmessage.substring(64);
+
+        var key = CryptoJS.PBKDF2(pass, salt, {
+            keySize: keySize / 32,
+            iterations: iterations
+        });
+
+        var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+            iv: iv,
+            padding: CryptoJS.pad.Pkcs7,
+            mode: CryptoJS.mode.CBC
+        })
+        return decrypted;
+    }
+
+    async getData() {
+        fileHash = this.props.file_hash;
 
     }
-}
 
-decrypt(transitmessage, pass) {
+    async onReadData(event) {
+        event.preventDefault();
 
-    var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
-    var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
-    var encrypted = transitmessage.substring(64);
+        await this.getData();
+        this.setState({ currentStatus: "Reading data.." })
+    }
 
-    var key = CryptoJS.PBKDF2(pass, salt, {
-        keySize: keySize / 32,
-        iterations: iterations
-    });
+    async onButtonClick(event) {
+        await this.onReadData(event);
+        this.onDownloadFile(event);
+    }
 
-    var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-        iv: iv,
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC
-    })
-    return decrypted;
-}
+    async onDownloadFile(event) {
 
-async getData() {
-    fileHash = this.props.file_hash;
-   
-}
+        event.preventDefault();
 
-async onReadData(event) {
-    event.preventDefault();
+        let uid = this.props.currentUser;
+        var storageRef = firebase.storage().ref(uid)
+        await storageRef.child(fileHash).getDownloadURL().then(url => {
+            this.setState({ fileUrl: url })
+        }).catch(err => {
+            console.log(err, "url error")
+        })
 
-    await this.getData();
-    this.setState({currentStatus: "Reading data.."})
-}
+        this.setState({ currentStatus: "Downloading file. Please wait.." })
+        var link = document.createElement("a");
+        console.log(uid, "download uuidddddd")
+        console.log(fileHash, 'filehashh')
+        link.href = this.state.fileUrl
+        console.log(link.href, "link")
+        document.body.appendChild(link);
 
-async onButtonClick(event) {
-    await this.onReadData(event);
-    this.onDownloadFile(event);
-}
+        var request = new XMLHttpRequest();
+        request.open('GET', link.href, true);
+        request.responseType = 'blob';
+        request.onload = () => {
+            var eReader = new FileReader();
+            eReader.readAsText(request.response);
+            eReader.onload = (e) => {
+                this.setState({ currentStatus: "Decrypting file. Please wait.." })
+                var decrypted = CryptoJS.AES.decrypt(e.target.result, this.state.privateKey).toString(CryptoJS.enc.Latin1);
+                var a = document.createElement("a");
+                a.href = decrypted;
 
- async onDownloadFile(event) {
+                if (!decrypted.toString().includes("data")) {
+                    alert("Make sure your CORS is enabled")
+                    return;
+                }
 
-    event.preventDefault();
+                let split1 = decrypted.toString().split("data:")
+                let split2 = split1[1].split(";base64")
+                let type = split2[0]
 
-    let uid = this.props.currentUser;
-    var storageRef =  firebase.storage().ref(uid)
-    await storageRef.child(fileHash).getDownloadURL().then(url => {
-       this.setState({ fileUrl: url })
-   }).catch(err => {
-       console.log(err, "url error")
-   })
+                a.download = fileHash;
+                document.body.appendChild(a);
+                a.click();
 
-    this.setState({currentStatus: "Downloading file. Please wait.."})
-    var link = document.createElement("a");
-    console.log(uid, "download uuidddddd")
-    console.log(fileHash,'filehashh')
-    link.href = this.state.fileUrl    
-    console.log(link.href,"link")
-    document.body.appendChild(link);
-
-    var request = new XMLHttpRequest();
-    request.open('GET', link.href, true);
-    request.responseType = 'blob';
-    request.onload = () => {
-        var eReader = new FileReader();
-        eReader.readAsText(request.response);
-        eReader.onload = (e) => {
-            this.setState({currentStatus: "Decrypting file. Please wait.."})
-            var decrypted = CryptoJS.AES.decrypt(e.target.result, this.state.privateKey).toString(CryptoJS.enc.Latin1);
-            var a = document.createElement("a");
-            a.href = decrypted;
-
-            if (!decrypted.toString().includes("data")) {
-                alert("Make sure your CORS is enabled")
-                return;
-            }
-
-            let split1 = decrypted.toString().split("data:")
-            let split2 = split1[1].split(";base64")
-            let type = split2[0]
-
-            a.download = fileHash;
-            document.body.appendChild(a);
-            a.click();
-
-            this.setState({currentStatus: "File downloaded."})
+                this.setState({ currentStatus: "File downloaded." })
+            };
         };
-    };
-    request.send();
-}
-
-render() {
-    return(
-<div>
-    <br/>
-    {
-        // (this.props.diabled) ? () : ()
+        request.send();
     }
-    <label style={{ marginLeft: '400px', color: 'blue'}}>{this.state.currentStatus}</label>
-    <br/>
-<Button onClick={this.onButtonClick.bind(this)}
-                                                className="btn waves-effect waves-light"
-                                                style={{backgroundColor: '#145CFF', margin: ' 0 520px', color: 'white'}}>Download
+
+    render() {
+        return (
+            <div>
+                <br />
+                {
+                    // (this.props.diabled) ? () : ()
+                }
+                <label style={{ marginLeft: '520px', color: 'blue' }}>{this.state.currentStatus}</label>
+                <br />
+                <Button onClick={this.onButtonClick.bind(this)}
+                    className="btn waves-effect waves-light"
+                    style={{ backgroundColor: '#145CFF', margin: ' 0 520px', color: 'white' }}>Download
                                             File</Button>
-                                            
-        
-        </div>
-    );
+
+
+            </div>
+        );
     }
 }
 
@@ -175,10 +175,10 @@ function mapStateToProp(state) {
         // progressBarDisplay: state.root.progressBarDisplay,
         errorMsg: state.root.errorMessage,
         currentUser: state.root.userID,
-        userPrivateKey : state.root.userprivatekey,
-        fileNames : state.root.filenames,
-        file_hash : state.root.file_hash,
-        file_selected : state.root.selection
+        userPrivateKey: state.root.userprivatekey,
+        fileNames: state.root.filenames,
+        file_hash: state.root.file_hash,
+        file_selected: state.root.selection
     })
 }
 
