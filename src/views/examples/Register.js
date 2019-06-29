@@ -1,6 +1,6 @@
 import React , {Component} from 'react';
 import firebase from 'firebase'
-import { signupAction, errorMessage, getCurrentUserId, getUserPrivateKey , getNotification} from '../../store/actions/actions';
+import { signupAction, errorMessage, getCurrentUserId, getUserPrivateKey , getNotification, updateUserName} from '../../store/actions/actions';
 import { connect } from 'react-redux';
 import history from '../../history';
 
@@ -96,6 +96,7 @@ signup(event) {
      db.collection('userData').doc(currentUser).set(user)
      .then(() => {
       console.log("USER ADDED TO FIREBASE")
+      this.props.updateUserName(user.userName);
       this.props.history.push('/admin/index');
 })
 
@@ -285,6 +286,11 @@ function mapDispatchToProp(dispatch) {
       ,
       userLoggedinOrRegistered : (notify) => {
         dispatch(getNotification(notify))
+      },
+      
+      updateUserName: (user) => {
+        dispatch(updateUserName(user));
+
       }
   })
 

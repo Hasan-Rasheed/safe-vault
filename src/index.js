@@ -4,6 +4,11 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import {Provider} from 'react-redux';
 import store from './store';
 import history from './history'
+// import { library } from '@fortawesome/fontawesome-svg-core'
+// import { fab } from '@fortawesome/free-brands-svg-icons'
+// import { faUser} from '@fortawesome/free-solid-svg-icons'
+ 
+// library.add(fab, faUser)
 
 import "assets/vendor/nucleo/css/nucleo.css";
 import "assets/vendor/@fortawesome/fontawesome-free/css/all.min.css";

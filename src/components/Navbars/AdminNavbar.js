@@ -2,6 +2,7 @@ import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import firebase from 'firebase'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import history from '../../history';
 
 // reactstrap components
@@ -75,7 +76,10 @@ class AdminNavbar extends Component {
                   
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                     
+                      <i className="ni ni-single-02" />
+                      </span>
+                      <span>
+                    <span>      </span>
                     {this.props.updateUserName}
                       </span>
                     </Media>
