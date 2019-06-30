@@ -156,11 +156,11 @@ class DownloadFile extends Component {
                 {
                     // (this.props.diabled) ? () : ()
                 }
-                <label style={{ marginLeft: '520px', color: 'blue' }}>{this.state.currentStatus}</label>
+                <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
                 <br />
                 <Button onClick={this.onButtonClick.bind(this)}
                     className="btn waves-effect waves-light"
-                    style={{ backgroundColor: '#145CFF', margin: ' 0 520px', color: 'white' }}>Download
+                    style={{ backgroundColor: '#145CFF', color: 'white' }}>Download
                                             File</Button>
 
 

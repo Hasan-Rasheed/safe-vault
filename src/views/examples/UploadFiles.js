@@ -8,7 +8,8 @@ import { getCurrentUserId, errorMessage, getFileNames ,getFileHash , isFileSelec
 import Download from './Download'
 import FileIcon, { defaultStyles } from 'react-file-icon';
 import { Container, Row, Col } from 'react-grid-system';
-import '../../assets/css/FileList.css';
+import axios from 'axios'
+import '../../assets/css/style.css';
 // reactstrap components
 import {
   Button,
@@ -206,6 +207,14 @@ class UploadFiles extends Component {
     }).catch(errr => {
       console.log("data storage error " + errr)
     })
+    console.log(fileHash)
+    await axios.post('http://35.237.81.78:3003/sendtx/' + fileHash)
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.log(error);
+  });
   };
 
   handleLabelClick(filename){
@@ -245,9 +254,9 @@ class UploadFiles extends Component {
     } = this.state;
 
     return (
-      <div style={{ margin: "25px 100px" }}>
+      <div className = "form-styling ">
 
-        <form className='add-product' onSubmit={this.onSaveData.bind(this)}>
+        <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
           <div className='form-group'>
             <input
               type='file'
@@ -284,9 +293,9 @@ class UploadFiles extends Component {
   this.state.fileList.map((file ) => {
           return (
            
-               <Col className = "card-spacing" lg={2} md={2} >
+               <Col className = "card-spacing" lg={2} md={2} xsm = {2} >
                <div>
-                 <Card className = "card-background" style={ { backgroundColor: this.myColor(file)}} onClick ={() => this.handleLabelClick(file)}>
+                 <Card className = "card-background" style={ { backgroundColor: this.myColor(file), fontweight:'bold'}} onClick ={() => this.handleLabelClick(file)}>
                  <CardBody>
                    {this.fileExtension(file)}
                    <CardText className="file-name" >{file}</CardText>
@@ -305,8 +314,9 @@ class UploadFiles extends Component {
   } 
   </Row>
   </Container>
+  <div className = "button-alignment">
  <Download/>
-  
+  </div>
       </div>
  
     );

@@ -1,0 +1,79 @@
+.card-grid{
+    border: 1em;
+    border-color: black;
+    box-shadow: 1em
+}
+
+.file-name{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    padding-top: 10px;
+    /* text-align: center; */
+    color: rgba(22, 21, 21, 0.91)
+    
+}
+.file-name:hover{
+    cursor: pointer
+
+}
+
+.card-background{
+    padding-top: 1em;
+    /* background-color: #e4ebee; */
+    
+}
+.card-background:hover{
+
+    background-color: #b2b2e0;
+   cursor : pointer
+}
+
+.button-alignment{
+    margin: 0 15px;
+}
+.card-spacing{
+    padding-top: 1em;
+}
+
+.form-styling{
+    margin: 25px 200px;
+}
+
+.img-styling{
+    height: 65px;
+    padding: 10px
+}
+.auth-img-styling{
+    height: 45px;
+}
+
+
+/* only small desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .form-styling{
+        margin: 25px 100px;
+    }
+  }
+  
+  /* tablets */
+  @media (max-width: 991px) {
+    .form-styling{
+        margin: 10px 50px;
+    }
+    .container-fluid{
+        width: 30% !important
+    }
+  }
+  
+  /* only small tablets */
+  @media (min-width: 768px) and (max-width: 991px) {
+    .form-styling{
+        margin: 5px 100px
+    }
+    .container-fluid{
+        width: 10% !important
+    }
+  }
+  
