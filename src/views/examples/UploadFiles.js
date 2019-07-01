@@ -208,12 +208,15 @@ class UploadFiles extends Component {
       console.log("data storage error " + errr)
     })
     console.log(fileHash)
-    await axios.post('http://35.237.81.78:3003/sendtx/' + fileHash)
+    // alert("Do you want to continue")
+    await axios.get('http://35.237.81.78:3003/sendtx/' + fileHash)
   .then(response => {
-    console.log(response.data);
+    alert("Your Transaction has been done ");
+    // console.log(response.data);
   })
   .catch(error => {
-    console.log(error);
+    alert("Your Transaction has been cancelled");
+    // console.log(error);
   });
   };
 
