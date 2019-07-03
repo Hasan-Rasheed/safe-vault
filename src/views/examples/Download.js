@@ -156,12 +156,20 @@ class DownloadFile extends Component {
                 {
                     // (this.props.diabled) ? () : ()
                 }
-                <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
+                
+                <input 
+                type = 'password'
+                className = 'form-control'
+                onChange = {this.OnChangePrivateKey}
+                placeholder = 'Enter Your Private Key to Encrypt the Data'
+                />
+              
                 <br />
                 <Button onClick={this.onButtonClick.bind(this)}
                     className="btn waves-effect waves-light"
                     style={{ backgroundColor: '#145CFF', color: 'white' }}>Download
                                             File</Button>
+                                            <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
 
 
             </div>
@@ -175,7 +183,7 @@ function mapStateToProp(state) {
         // progressBarDisplay: state.root.progressBarDisplay,
         errorMsg: state.root.errorMessage,
         currentUser: state.root.userID,
-        userPrivateKey: state.root.userprivatekey,
+        // userPrivateKey: state.root.userprivatekey,
         fileNames: state.root.filenames,
         file_hash: state.root.file_hash,
         file_selected: state.root.selection

@@ -1,7 +1,7 @@
 import React , {Component} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import { signinAction, errorMessage, getCurrentUserId,getUserPrivateKey , getNotification , updateUserName} from '../../store/actions/actions';
+import { signinAction, errorMessage, getCurrentUserId , getNotification , updateUserName} from '../../store/actions/actions';
 import firebase from 'firebase';
 import history from '../../history';
 
@@ -61,7 +61,7 @@ signin(event) {
           console.log(snapshot.user.uid);
           this.props.currentUserId(snapshot.user.uid);
           console.log(user.password)
-          this.props.userPrivateKey(user.password);
+        
         //  let currentuser =  firebase.auth().snapshot;
         //  console.log(currentuser);
         // var userId = firebase.auth().currentUser.uid;
@@ -241,9 +241,7 @@ function mapDispatchToProp(dispatch) {
       currentUserId : (uid) => {
         dispatch(getCurrentUserId(uid))
       },
-      userPrivateKey : (key) => {
-        dispatch(getUserPrivateKey(key))
-      },
+     
       userLoggedinOrRegistered : (notify) => {
         dispatch(getNotification(notify))
       }

@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames ,getFileHash , isFileSelected } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected } from "../../store/actions/actions";
 import Download from './Download'
 import FileIcon, { defaultStyles } from 'react-file-icon';
 import { Container, Row, Col } from 'react-grid-system';
@@ -47,18 +47,21 @@ class UploadFiles extends Component {
       transactionHash: '',
       open: false,
       uid: this.props.currentUser,
-      privateKey: this.props.userPrivateKey,
+      // privateKey: this.props.userPrivateKey,
+      privateKey: '',
       fileList: [],
       extensions: [],
       // bgColor : "#e4ebee"
       active: null
     }
 
+    this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
+
 
   }
    async componentDidMount() {
     let that = this;
-    console.log(this.state.privateKey, "pass")
+    // console.log(this.state.privateKey, "pass")
     console.log(this.props.currentUser, "checking dataa")
 
      await firebase.firestore().collection('userData').doc(this.state.uid).onSnapshot(function (snapshot) {
@@ -144,7 +147,13 @@ class UploadFiles extends Component {
     }
   }
 
+  OnChangePrivateKey = (event) => {
+    
+      this.setState({privateKey:event.target.value })
+      this.props.userPrivateKey(event.target.value);
+  }
 
+  
   
 
   uploadFile = async () => {
@@ -163,10 +172,7 @@ class UploadFiles extends Component {
     console.log(fileName, "setting file name")
     //  let fileHash = sha256(file[0].name)
     console.log(fileHash);
-    // let hash = fileData.fileHash
-    // firebase.firestore().collection('userData').doc(uid).field
     
-
   };
 
   captureFile = (event) => {
@@ -269,8 +275,16 @@ class UploadFiles extends Component {
               onChange={this.captureFile}
               className='form-control' />
 
-          </div>
+          <br/>
 
+          <input 
+          type = 'password'
+          className = 'form-control'
+          onChange = {this.OnChangePrivateKey}
+          placeholder = 'Enter Your Private Key to Encrypt the Data'
+          />
+</div>
+          
           <Button
 
             color="primary"
@@ -354,6 +368,9 @@ function mapDispatchToProp(dispatch) {
     },
     getFileHash: (file_hash) => {
       dispatch(getFileHash(file_hash));
+    },
+    userPrivateKey : (key) => {
+      dispatch(getUserPrivateKey(key))
     },
     isFileSelected: (selection) => {
       dispatch(isFileSelected(selection));
