@@ -4,11 +4,20 @@ import Profile from "views/examples/Profile";
 import Register from "views/examples/Register";
 import Login from "views/examples/Login";
 import Logout from './views/examples/Logout';
-import Home from './views/examples/HomePage';
+// import Home from './views/examples/HomePage';
+import Example from "./views/examples/Tabs";
 // import Tables from "views/examples/Tables";
 // import Icons from "views/examples/Icons";
 
 var routes = [
+  {
+    path: "/tabs",
+    name: "Tabs",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: Example,
+    layout: "/admin"
+  }
+  ,
   {
     path: "/Index",
     name: "Dashboard",
@@ -38,7 +47,7 @@ var routes = [
   //   component: Profile,
   //   layout: "/admin"
   // }
-  // ,
+  
   {
     path: "/login",
     name: "Login",
@@ -61,5 +70,6 @@ var routes = [
     component: Logout,
     layout: ""
   }
+  ,
 ];
 export default routes;
