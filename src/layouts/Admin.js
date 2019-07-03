@@ -9,6 +9,7 @@ import Login from '../views/examples/Login';
 
 import UploadFiles from '../views/examples/UploadFiles';
 import routes from "routes.js";
+import Example from "../views/examples/Tabs";
 
 class Admin extends React.Component {
   componentDidUpdate(e) {
@@ -58,8 +59,9 @@ class Admin extends React.Component {
           {/* <UploadFiles/> */}
 
           <Switch>{this.getRoutes(routes)}</Switch>
+          <Example/>
           {/* <Container fluid> */}
-          <UploadFiles/>
+          {/* <UploadFiles/> */}
           {/* <form className='add-product' onSubmit={this.submit}>
         <div className='form-group'>
           <input

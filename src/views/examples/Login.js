@@ -73,6 +73,7 @@ return firebase.firestore().collection('userData').doc(currentUser).get().then(f
   console.log("Document data:", snapshot.data().userName);
   that.props.updateUserName(snapshot.data().userName);
             that.props.history.push('/admin/index');
+            // that.props.history.push('/admin/tabs');
 
 } else {
   // doc.data() will be undefined in this case
