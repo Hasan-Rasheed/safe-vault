@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../assets/css/style.css'
 import { 
 TabContent, 
 TabPane, 
@@ -35,7 +36,7 @@ export default class Example extends React.Component {
   render() {
     return (
       <div>
-        <Nav tabs>
+        <Nav tabs className = "tabStyling">
           <NavItem>
             <NavLink
               className={classnames({ active: this.state.activeTab === '1' })}

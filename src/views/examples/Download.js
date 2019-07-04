@@ -56,10 +56,17 @@ class DownloadFile extends Component {
             fileUrl: "",
             fHash: '',
             fileList: this.props.fileNames,
-            privateKey: this.props.userPrivateKey,
+            privateKey: '',
             isButtonDisabled: this.props.file_selected
 
         }
+        this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
+    }
+
+    OnChangePrivateKey = (event) => {
+    
+        this.setState({privateKey:event.target.value })
+        // this.props.userPrivateKey(event.target.value);
     }
 
     decrypt(transitmessage, pass) {
@@ -97,6 +104,7 @@ class DownloadFile extends Component {
         await this.onReadData(event);
         this.onDownloadFile(event);
     }
+
 
     async onDownloadFile(event) {
 
@@ -157,7 +165,7 @@ class DownloadFile extends Component {
                     // (this.props.diabled) ? () : ()
                 }
                 
-                <input 
+                <Input 
                 type = 'password'
                 className = 'form-control'
                 onChange = {this.OnChangePrivateKey}

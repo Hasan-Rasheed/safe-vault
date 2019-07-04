@@ -150,7 +150,7 @@ class UploadFiles extends Component {
   OnChangePrivateKey = (event) => {
     
       this.setState({privateKey:event.target.value })
-      this.props.userPrivateKey(event.target.value);
+      // this.props.userPrivateKey(event.target.value);
   }
 
   
@@ -267,7 +267,7 @@ class UploadFiles extends Component {
 
         <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
           <div className='form-group'>
-            <input
+            <Input
               type='file'
               ref='myFile'
               multiple="multiple"
@@ -277,7 +277,7 @@ class UploadFiles extends Component {
 
           <br/>
 
-          <input 
+          <Input 
           type = 'password'
           className = 'form-control'
           onChange = {this.OnChangePrivateKey}

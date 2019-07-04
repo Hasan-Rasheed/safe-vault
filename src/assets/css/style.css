@@ -49,6 +49,22 @@
     height: 45px;
 }
 
+/* Tabs Styling */
+
+.tabStyling{
+    text-align: center;
+    max-width : 241px;
+    justify-content: center !important;
+    margin: 2em auto;
+    box-shadow: 0 0 9px rgba(0, 0, 0, 0.1);
+    background-color: transparent !important;
+    font-size: 14px;
+    /* font-family: 'Montserrat', sans-serif; */
+    /* font-family: 'Panton'; */
+    /* font-weight: 500; */
+    /* color: #424242; */
+}
+
 
 /* only small desktops */
 @media (min-width: 992px) and (max-width: 1199px) {
