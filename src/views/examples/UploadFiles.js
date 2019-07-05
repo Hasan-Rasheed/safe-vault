@@ -214,8 +214,9 @@ class UploadFiles extends Component {
       console.log("data storage error " + errr)
     })
     console.log(fileHash)
+    fileHash = JSON.stringify(fileHash);
     // alert("Do you want to continue")
-    await axios.get('http://35.237.81.78:3003/sendtx/' + fileHash)
+    await axios.get('192.168.0.117:3003/sendHash/' + fileHash)
   .then(response => {
     alert("Your Transaction has been done ");
     // console.log(response.data);
@@ -264,6 +265,7 @@ class UploadFiles extends Component {
 
     return (
       <div className = "form-styling ">
+         <h1>Upload Files</h1>
 
         <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
           <div className='form-group'>

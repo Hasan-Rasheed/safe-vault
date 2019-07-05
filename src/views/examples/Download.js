@@ -32,14 +32,6 @@ import {
 import { isLabeledStatement } from "typescript";
 
 
-// var keySize = 256;
-// var ivSize = 128;
-// var iterations = 100;
-
-
-
-var privateKey = ''
-
 // Decryption parameters
 var keySize = 256;
 var iterations = 100;
@@ -139,7 +131,8 @@ class DownloadFile extends Component {
                 a.href = decrypted;
 
                 if (!decrypted.toString().includes("data")) {
-                    alert("Make sure your CORS is enabled")
+
+                    alert("Make sure Your Private Key is valid and your CORS is enabled")
                     return;
                 }
 

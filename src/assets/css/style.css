@@ -59,10 +59,17 @@
     box-shadow: 0 0 9px rgba(0, 0, 0, 0.1);
     background-color: transparent !important;
     font-size: 14px;
+    cursor: pointer;
     /* font-family: 'Montserrat', sans-serif; */
     /* font-family: 'Panton'; */
     /* font-weight: 500; */
     /* color: #424242; */
+}
+
+.nav-link.active
+{
+    background-color: #9494f0 !important;
+    color: white !important;
 }
 
 

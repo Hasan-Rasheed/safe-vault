@@ -21,6 +21,7 @@ export default class Example extends React.Component {
     super(props);
 
     this.toggle = this.toggle.bind(this);
+
     this.state = {
       activeTab: '1'
     };
@@ -29,16 +30,25 @@ export default class Example extends React.Component {
   toggle(tab) {
     if (this.state.activeTab !== tab) {
       this.setState({
+
         activeTab: tab
       });
     }
+
+    if (this.state.active === tab) {
+    
+    } else {
+      this.setState({active : tab})
+    }
   }
+
   render() {
     return (
       <div>
         <Nav tabs className = "tabStyling">
           <NavItem>
-            <NavLink
+            <NavLink className = "tabs"
+            // style = {{backgroundColor: this.myColor('2')}}
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1'); }}
             >
@@ -47,6 +57,7 @@ export default class Example extends React.Component {
           </NavItem>
           <NavItem>
             <NavLink
+              // style = {{backgroundColor: this.myColor('2')}}
               className={classnames({ active: this.state.activeTab === '2' })}
               onClick={() => { this.toggle('2'); }}
             >
