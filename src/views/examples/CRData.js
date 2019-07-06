@@ -1,17 +1,46 @@
 import React from 'react';
 import {Input,Button, } from 'reactstrap';
 import CryptoJS from 'crypto-js';
+// import axios from 'axios'
+import { connect } from 'react-redux';
+import firebase from 'firebase';
+import {getAddress} from '../../store/actions/actions';
+
+const axios = require('axios');
 
 
 var encrypted = ''
-export default class CreateReadData extends React.Component {
+class CreateReadData extends React.Component {
+
+
+
 
   state={
     privateKey:'',
     Keyindex:'',
     data:'',
     currentStatus: '',
-    decryptedData: ''
+    decryptedData: '',
+  }
+
+
+  componentDidMount(){
+  
+  let that=this;
+    firebase.firestore().collection("userData").doc(this.props.userId).get().then(function(doc) {
+      if (doc.exists) {
+          console.log("Document data:", doc.data());
+          console.log(doc.data().address)
+          that.props.userAddress(doc.data().address)
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+      }
+  }).catch(function(error) {
+      console.log("Error getting document:", error);
+  });
+
+
   }
 
   OnChangePrivateKey = (event) => {
@@ -46,7 +75,21 @@ encryptData = () => {
   console.log(this.state.data);
  encrypted = CryptoJS.AES.encrypt(this.state.data, this.state.privateKey)
   console.log( encrypted.toString(), "encrypted data")
+  console.log(this.props.Address,"address")
+  let obj={
+    address: this.props.Address,
+    index:this.state.Keyindex,
+    data:encrypted.toString()
+  }
+  console.log(obj)
   
+  axios.post('http://192.168.137.212:3003/sendData', obj)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
   
 };
 
@@ -144,3 +187,19 @@ decryptData = (event) => {
     );
   }
 }
+function mapStateToProp(state) {
+  console.log(state)
+  return ({
+    Address: state.root.address,
+    userId:state.root.userID
+  })
+}
+function mapDispatchToProp(dispatch) {
+  return ({
+    userAddress: (address) => {
+      dispatch(getAddress(address));
+    }
+  })
+}
+export default connect(mapStateToProp, mapDispatchToProp)(CreateReadData);
+// export default  CreateReadData;

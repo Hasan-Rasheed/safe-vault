@@ -71,7 +71,8 @@ class Register extends Component {
         userName: this.state.userName,
         password: this.state.password,
         uid: '',
-        files: []
+        files: [],
+        address:''
       }
       // this.props.signupwithEmailPassword(user);
       // console.log(user);
@@ -98,7 +99,10 @@ class Register extends Component {
               console.log("USER ADDED TO FIREBASE")
               const identity = EthCrypto.createIdentity();
               console.log(identity.address, "Address");
-              this.props.getAddress(identity.address);
+              db.collection('userData').doc(currentUser).update({
+                address:identity.address
+              })
+              this.props.userAddress(identity.address);
               this.props.updateUserName(user.userName);
               this.props.history.push('/admin/index');
             })
