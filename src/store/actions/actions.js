@@ -188,6 +188,13 @@ export function getUserPrivateKey(key){
     }
 }
 
+export function getAddress(address){
+    console.log(address,"address")
+    return dispatch => {
+        dispatch({ type: 'ADDRESS', payload: address })
+    }
+}
+
 export function errorMessage(msg) {
     return dispatch => {
         dispatch({ type: 'ERROR_MESSAGE', payload: msg })

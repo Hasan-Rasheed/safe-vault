@@ -17,6 +17,7 @@ import firebase from 'firebase';
 import AdminLayout from "layouts/Admin";
 import AuthLayout from "layouts/Auth";
 
+<script src="https://js.stripe.com/v3/"></script>
 
 var firebaseConfig = {
   apiKey: "AIzaSyCLe2yPQlJzZMR9I4ZuungBUAe3FIhOwZk",
