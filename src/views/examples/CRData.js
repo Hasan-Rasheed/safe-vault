@@ -254,7 +254,13 @@ function mapDispatchToProp(dispatch) {
     
     getFileNames: (filenames) => {
       dispatch(getFileNames(filenames));
-    }
+    },
+    getFileHash: (file_hash) => {
+      dispatch(getFileHash(file_hash));
+    },
+    isFileSelected: (selection) => {
+      dispatch(isFileSelected(selection));
+    },
   })
 }
 export default connect(mapStateToProp, mapDispatchToProp)(CreateReadData);

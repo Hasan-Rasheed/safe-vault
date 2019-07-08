@@ -33,7 +33,7 @@ import {
 } from "reactstrap";
 import { isLabeledStatement } from "typescript";
 
-
+const axios = require('axios');
 // Decryption parameters
 var keySize = 256;
 var iterations = 100;
@@ -54,7 +54,7 @@ class DownloadFile extends Component {
             // fileList: this.props.fileNames,
             privateKey: '',
             isButtonDisabled: this.props.file_selected,
-            
+            checkExist:false
 
         }
         this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -95,7 +95,21 @@ class DownloadFile extends Component {
     }
 
     async getData() {
+        let that=this;
         fileHash = this.props.file_hash;
+        let obj={
+            address:this.props.Address,
+            data:fileHash
+        }
+        console.log(obj)
+    axios.post('http://192.168.0.117:3003/existHash', obj)
+    .then(function (response) {
+      console.log(response);
+      that.setState({ checkExist: response })
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 
     }
 
@@ -104,11 +118,18 @@ class DownloadFile extends Component {
         
         await this.getData();
         this.setState({ currentStatus: "Reading data.." })
+
+
+
+
     }
 
     async onButtonClick(event) {
         await this.onReadData(event);
-        this.onDownloadFile(event);
+        if(this.state.checkExist){
+
+               this.onDownloadFile(event);
+        }
     }
 
 
@@ -203,7 +224,8 @@ function mapStateToProp(state) {
         // userPrivateKey: state.root.userprivatekey,
         fileNames: state.root.filenames,
         file_hash: state.root.file_hash,
-        file_selected: state.root.selection
+        file_selected: state.root.selection,
+        Address: state.root.address
     })
 }
 
