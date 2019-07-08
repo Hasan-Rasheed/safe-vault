@@ -177,7 +177,7 @@ class UploadFiles extends Component {
       address:this.props.Address, 
       data:fileHash
     }
-    await axios.post('http://localhost:3003/sendHash' ,obj)
+    await axios.post('http://192.168.0.115:3003/sendHash' ,obj)
   .then(response => {
     alert("Your Transaction has been done ");
     var storageRef = firebase.storage().ref(uid)
@@ -238,7 +238,7 @@ encryptData = () => {
   }
   console.log(obj)
   
-  axios.post('http://localhost:3003/sendData', obj)
+  axios.post('http://192.168.0.115:3003/sendData', obj)
   .then(function (response) {
     console.log(response);
   })
