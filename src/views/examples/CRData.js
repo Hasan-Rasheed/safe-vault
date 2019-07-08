@@ -115,7 +115,7 @@ let that=this;
       index:this.state.Keyindex
     }
     console.log(obj)
-    axios.post('http://192.168.0.117:3003/existFile', obj)
+    axios.post('http://localhost:3003/existFile', obj)
     .then(function (response) {
       console.log(response.data.data);
       that.decryptData(response.data.data);
@@ -167,7 +167,7 @@ fileExtension = (file) => {
 
   render() {
     return (
-      <div>
+      <div className = "form-styling">
 
 <Container>
         <Row className = "card-spacing">
@@ -198,13 +198,13 @@ fileExtension = (file) => {
   } 
   </Row>
   </Container>
-        <div className = "button-alignment">
+        <div className = "add-product button-alignment">
  <Download/>
   </div>
      
-
+  <br/>
         <form className='add-product button-alignment' onSubmit={this.onReadData.bind(this)}>
-        <div className = "form-styling ">
+        <div >
 
         <h1>Data Read</h1>
         <input 

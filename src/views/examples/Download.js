@@ -102,10 +102,10 @@ class DownloadFile extends Component {
             data:fileHash
         }
         console.log(obj)
-    axios.post('http://192.168.0.117:3003/existHash', obj)
+    axios.post('http://localhost:3003/existHash', obj)
     .then(function (response) {
       console.log(response);
-      that.setState({ checkExist: response })
+      that.setState({ checkExist: response.data.data })
     })
     .catch(function (error) {
       console.log(error);
