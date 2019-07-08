@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
 import Download from './Download'
 import FileIcon, { defaultStyles } from 'react-file-icon';
 import { Container, Row, Col } from 'react-grid-system';
@@ -216,7 +216,11 @@ class UploadFiles extends Component {
     console.log(fileHash)
     fileHash = JSON.stringify(fileHash);
     // alert("Do you want to continue")
-    await axios.get('192.168.0.117:3003/sendHash/' + fileHash)
+    let obj={
+      address:this.props.Address, 
+      data:fileHash
+    }
+    await axios.get('http://192.168.0.117:3003/sendHash' ,obj)
   .then(response => {
     alert("Your Transaction has been done ");
     // console.log(response.data);
@@ -349,7 +353,8 @@ function mapStateToProp(state) {
     errorMsg: state.root.errorMessage,
     currentUser: state.root.userID,
     userPrivateKey : state.root.userprivatekey,
-    notification: state.root.notify
+    notification: state.root.notify,
+    Address: state.root.address,
   })
 }
 
@@ -376,6 +381,9 @@ function mapDispatchToProp(dispatch) {
     },
     isFileSelected: (selection) => {
       dispatch(isFileSelected(selection));
+    },
+    userAddress: (address) => {
+      dispatch(getAddress(address));
     }
     
   })
