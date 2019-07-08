@@ -23,10 +23,10 @@ const stripeBtn = () => {
     };
     return (
         <StripeCheckout
-            label="Go Premium" //Component button text
+            label="Upload" //Component button text
             name="Business LLC" //Modal Header
             description="Upgrade to a premium account today."
-            panelLabel="Go Premium" //Submit button in modal
+            panelLabel="Pay" //Submit button in modal
             amount={999} //Amount in cents $9.99
             token={onToken}
             stripeKey={publishableKey}

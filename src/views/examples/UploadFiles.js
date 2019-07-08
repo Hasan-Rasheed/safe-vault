@@ -287,7 +287,7 @@ encryptData = () => {
       <div className = "form-styling ">
          <h1>Upload Files</h1>
 
-       {(this.state.flag)?(<CreditCard/>):(null)} 
+       {/* {(this.state.flag)?(<CreditCard/>):(null)}  */}
         <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
           <div className='form-group'>
             <Input
@@ -308,15 +308,7 @@ encryptData = () => {
           />
 </div>
           
-          <Button
-
-            color="primary"
-            type="submit" name="action"
-            title='submit'
-
-          >
-            Upload
-        </Button>
+          <CreditCard/>
           <br />
           <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}</label>
           <br />
@@ -326,7 +318,7 @@ encryptData = () => {
         <br />
        
         <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
-      <div className = "form-styling ">
+      <div className = "form-group ">
       <h1>Data Write</h1>
           <input 
           type = 'password'
@@ -354,6 +346,7 @@ encryptData = () => {
             // onClick = {this.onSave}
 
           >
+            {/* <CreditCard/> */}
             Save
         </Button>
         <hr/>
