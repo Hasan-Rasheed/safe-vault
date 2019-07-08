@@ -30,15 +30,51 @@
    cursor : pointer
 }
 
+.button-styling{
+    overflow: hidden;
+    display: inline-block;
+    background: linear-gradient(rgb(40, 160, 229), rgb(1, 94, 148));
+    border: 0px;
+    padding: 1px;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 0px;
+    cursor: pointer;
+    visibility: visible;
+    user-select: none;
+}
+.button-span{
+    background-image: linear-gradient(rgb(125, 197, 238), rgb(0, 140, 221) 85%, rgb(48, 162, 228));
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    position: relative;
+    padding: 0px 12px;
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    box-shadow: rgba(255, 255, 255, 0.25) 0px 1px 0px inset;
+    text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 0px;
+    border-radius: 4px;
+}
+
 .button-alignment{
     margin: 0 15px;
+    /* max-width: 100% !important; */
+}
+.form-style{
+        max-width: 100% !important;
+
 }
 .card-spacing{
     padding-top: 1em;
 }
 
 .form-styling{
-    margin: 25px 200px;
+    margin: 0px 200px;
+    /* border: 1px solid #dbdbdb; */
+    box-shadow: 0 0 9px rgba(0, 0, 0, 0.1);
 }
 
 .img-styling{
@@ -50,16 +86,25 @@
 }
 
 /* Tabs Styling */
+.nav-link{
+    padding: 9px 36px ;
 
+}
+.nav-tabs{
+    border-bottom: none;
+}
 .tabStyling{
     text-align: center;
-    max-width : 241px;
+    max-width : 240px;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
     justify-content: center !important;
-    margin: 2em auto;
+    margin: 2em auto 0em;
     box-shadow: 0 0 9px rgba(0, 0, 0, 0.1);
     background-color: transparent !important;
     font-size: 14px;
     cursor: pointer;
+
     /* font-family: 'Montserrat', sans-serif; */
     /* font-family: 'Panton'; */
     /* font-weight: 500; */
@@ -76,14 +121,14 @@
 /* only small desktops */
 @media (min-width: 992px) and (max-width: 1199px) {
     .form-styling{
-        margin: 25px 100px;
+        margin: 0px 100px;
     }
   }
   
   /* tablets */
   @media (max-width: 991px) {
     .form-styling{
-        margin: 10px 50px;
+        margin: 0px 50px;
     }
     .container-fluid{
         width: 30% !important
@@ -93,7 +138,7 @@
   /* only small tablets */
   @media (min-width: 768px) and (max-width: 991px) {
     .form-styling{
-        margin: 5px 100px
+        margin: 0px 100px
     }
     .container-fluid{
         width: 10% !important

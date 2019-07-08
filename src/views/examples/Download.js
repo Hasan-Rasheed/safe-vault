@@ -204,9 +204,12 @@ class DownloadFile extends Component {
               
                 <br />
                 <Button onClick={this.onButtonClick.bind(this)}
-                    className="btn waves-effect waves-light"
-                    style={{ backgroundColor: '#145CFF', color: 'white' }}>Download
-                                            File</Button>
+                                  className = "button-styling"
+
+                    ><span className ="button-span">
+                        Download File
+                        </span>
+                        </Button>
                                             <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
 
 

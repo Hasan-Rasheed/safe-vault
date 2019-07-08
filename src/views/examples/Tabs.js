@@ -46,9 +46,10 @@ export default class Example extends React.Component {
     return (
       <div>
         <Nav tabs className = "tabStyling">
+          
           <NavItem>
-            <NavLink className = "tabs"
-            // style = {{backgroundColor: this.myColor('2')}}
+            <NavLink className="tabs"
+            // style = {{backgroundColor: "red"}}
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1'); }}
             >

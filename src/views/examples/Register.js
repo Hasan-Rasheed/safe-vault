@@ -29,6 +29,7 @@ class Register extends Component {
       userName: '',
       email: '',
       password: '',
+      registerError:'',
       // uid:''
     }
     this.signup = this.signup.bind(this)
@@ -83,8 +84,6 @@ class Register extends Component {
           this.props.userPrivateKey(user.password)
           delete user.password;
           this.props.userLoggedinOrRegistered("Registered")
-
-
           let currentUser = snapshot.user.uid;
           console.log(currentUser);
           this.props.currentUserId(currentUser);
@@ -111,6 +110,7 @@ class Register extends Component {
               // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
               // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
               // console.log(err)
+              
               console.log('error', err.message);
             })
           //       db.ref('userData/' + currentUser + '/').set(user)
@@ -128,7 +128,9 @@ class Register extends Component {
           // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
           // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
           // console.log(err)
+          // alert("ERROR: " + err.message)
           console.log('error', err.message);
+          this.setState({registerError: 'The email address is already in use by another account.'})
         })
     }
   }
@@ -226,38 +228,14 @@ class Register extends Component {
                     <Input placeholder="Password" name="password" type="password" value={this.state.password} onChange={this._onChangePassword} />
                   </InputGroup>
                 </FormGroup>
-                {/* <div className="text-muted font-italic">
-                  <small>
-                    password strength:{" "}
-                    <span className="text-success font-weight-700">strong</span>
-                  </small>
-                </div> */}
-                {/* <Row className="my-4">
-                  <Col xs="12">
-                    <div className="custom-control custom-control-alternative custom-checkbox">
-                      <input
-                        className="custom-control-input"
-                        id="customCheckRegister"
-                        type="checkbox"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor="customCheckRegister"
-                      >
-                        <span className="text-muted">
-                          I agree with the{" "}
-                          <a href="#pablo" onClick={e => e.preventDefault()}>
-                            Privacy Policy
-                          </a>
-                        </span>
-                      </label>
-                    </div>
-                  </Col>
-                </Row> */}
                 <div className="text-center">
+                <br/>
+                  <span style = {{color : "red" ,fontweight: 'bold', fontSize: '15px'}}>{this.state.registerError}</span>
+               
                   <Button className="mt-4" color="primary" type="button" onClick={this.signup}>
                     Create account
                   </Button>
+
                 </div>
               </Form>
             </CardBody>

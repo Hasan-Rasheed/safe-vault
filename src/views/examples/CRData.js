@@ -225,13 +225,14 @@ fileExtension = (file) => {
             
           <br/>
           <Button
+              className = "button-styling"
 
-            color="primary"
+            // color="primary"
             type="submit" name="action"
             title='submit'
 
           >
-            Retreive
+          <span className = "button-span">  Retreive</span>
         </Button>
       </div>
       </form>

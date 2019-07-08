@@ -110,7 +110,7 @@ class UploadFiles extends Component {
       return
     }
     else {
-      this.setState({flag : true})
+      // this.setState({flag : true})
       this.uploadFile()
     }
   }
@@ -177,7 +177,7 @@ class UploadFiles extends Component {
       address:this.props.Address, 
       data:fileHash
     }
-    await axios.post('http://192.168.0.115:3003/sendHash' ,obj)
+    await axios.post('http://localhost:3003/sendHash' ,obj)
   .then(response => {
     alert("Your Transaction has been done ");
     var storageRef = firebase.storage().ref(uid)
@@ -238,7 +238,7 @@ encryptData = () => {
   }
   console.log(obj)
   
-  axios.post('http://192.168.0.115:3003/sendData', obj)
+  axios.post('http://localhost:3003/sendData', obj)
   .then(function (response) {
     console.log(response);
   })
@@ -284,13 +284,15 @@ encryptData = () => {
     } = this.state;
 
     return (
-      <Container>
-        <Row>
+      
       <div className = "form-styling ">
-        
+        <br/>        <br/>
+
+       <Container>
+        <Row>
 
        {/* {(this.state.flag)?(<CreditCard/>):(null)}  */}
-       <Col lg= {6} md = {6} sm={6}>
+       <Col lg= {6} md = {6} xsm={6} className = "form-style">
         <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
           <div className='form-group'>
           <h1>Upload Files</h1>
@@ -320,7 +322,7 @@ encryptData = () => {
         </form>
 </Col>
         {/* <br /> */}
-   <Col lg = {6} md = {6} sm={6}>    
+   <Col lg = {6} md = {6} sm={6} className = "form-style">    
         <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
       <div className = "form-group ">
       <h1>Data Write</h1>
@@ -339,27 +341,30 @@ encryptData = () => {
           />
           <br/>
           <Input type="textarea" name="text" id="exampleText" 
+          placeholder = 'Your Text'
           onChange={this.OnChangeData.bind(this)}
           />
           <br/>
           <Button
-
-            color="primary"
+              className = "button-styling"
+            // color="primary"
             type="submit" name="action"
             title='submit'
             // onClick = {this.onSave}
 
           >
             {/* <CreditCard/> */}
-            Save
+           <span className = "button-span"> Save</span>
         </Button>
-        <hr/>
+        {/* <hr/> */}
         </div>
 </form>
+
   </Col>
-      </div>
-</Row>
+  </Row>
 </Container>
+      </div>
+
     );
   }
 }
