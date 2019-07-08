@@ -8,7 +8,7 @@ import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPriva
 import Download from './Download'
 import CreditCard from './CreditCardTransaction'
 // import FileIcon, { defaultStyles } from 'react-file-icon';
-// import { Container, Row, Col } from 'react-grid-system';
+import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
 import '../../assets/css/style.css';
 // reactstrap components
@@ -284,12 +284,16 @@ encryptData = () => {
     } = this.state;
 
     return (
+      <Container>
+        <Row>
       <div className = "form-styling ">
-         <h1>Upload Files</h1>
+        
 
        {/* {(this.state.flag)?(<CreditCard/>):(null)}  */}
+       <Col lg= {6} md = {6} sm={6}>
         <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
           <div className='form-group'>
+          <h1>Upload Files</h1>
             <Input
               type='file'
               ref='myFile'
@@ -314,9 +318,9 @@ encryptData = () => {
           <br />
 
         </form>
-
-        <br />
-       
+</Col>
+        {/* <br /> */}
+   <Col lg = {6} md = {6} sm={6}>    
         <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
       <div className = "form-group ">
       <h1>Data Write</h1>
@@ -352,9 +356,10 @@ encryptData = () => {
         <hr/>
         </div>
 </form>
-  
+  </Col>
       </div>
- 
+</Row>
+</Container>
     );
   }
 }

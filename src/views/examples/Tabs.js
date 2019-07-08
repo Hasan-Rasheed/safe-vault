@@ -67,19 +67,19 @@ export default class Example extends React.Component {
         </Nav>
         <TabContent activeTab={this.state.activeTab}>
           <TabPane tabId="1">
-            <Row>
-              <Col sm="12">
+            {/* <Row>
+              <Col sm="12"> */}
                 <UploadFiles/>
                 {/* <h4>Tab 1 Contents</h4> */}
-              </Col>
-            </Row>
+              {/* </Col>
+            </Row> */}
           </TabPane>
           <TabPane tabId="2">
-            <Row>
-              <Col sm="12">
+            {/* <Row>
+              <Col sm="12"> */}
                 <CreateReadData/>
-              </Col>
-            </Row>
+              {/* </Col>
+            </Row> */}
           </TabPane>
         </TabContent>
       </div>
