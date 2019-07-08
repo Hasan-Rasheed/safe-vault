@@ -6,6 +6,7 @@ import sha256 from 'sha256';
 import { connect } from 'react-redux';
 import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
 import Download from './Download'
+import CreditCard from './CreditCardTransaction'
 // import FileIcon, { defaultStyles } from 'react-file-icon';
 // import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
@@ -56,7 +57,8 @@ class UploadFiles extends Component {
       // bgColor : "#e4ebee"
       active: null,
       Keyindex: '',
-      data:''
+      data:'',
+      flag:false
     }
 
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -108,7 +110,8 @@ class UploadFiles extends Component {
       return
     }
     else {
-      this.uploadFile();
+      this.setState({flag : true})
+      this.uploadFile()
     }
   }
 
@@ -284,6 +287,7 @@ encryptData = () => {
       <div className = "form-styling ">
          <h1>Upload Files</h1>
 
+       {(this.state.flag)?(<CreditCard/>):(null)} 
         <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
           <div className='form-group'>
             <Input

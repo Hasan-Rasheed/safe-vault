@@ -101,7 +101,7 @@ class DownloadFile extends Component {
 
     async onReadData(event) {
         event.preventDefault();
-
+        
         await this.getData();
         this.setState({ currentStatus: "Reading data.." })
     }
