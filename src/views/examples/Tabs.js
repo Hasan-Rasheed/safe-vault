@@ -52,7 +52,7 @@ export default class Example extends React.Component {
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1'); }}
             >
-              WRITE
+              UPLOAD
             </NavLink>
           </NavItem>
           <NavItem>
