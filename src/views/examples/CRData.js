@@ -83,7 +83,7 @@ encryptData = () => {
   }
   console.log(obj)
   
-  axios.post('http://192.168.137.212:3003/sendData', obj)
+  axios.post('http://192.168.0.117:3003/sendData/', obj)
   .then(function (response) {
     console.log(response);
   })
