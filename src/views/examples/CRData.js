@@ -94,22 +94,36 @@ class CreateReadData extends React.Component {
     this.setState({privateKey:event.target.value })
 }
 
-
+OnChangeKey=(event)=>{
+  console.log(event.target.value)
+  this.setState({Keyindex:event.target.value })
+}
 
 
 
 onReadData(event) {
   event.preventDefault();
-
+let that=this;
   console.log(this.state.privateKey, "password")
   if (this.state.privateKey === '') {
     alert("Enter you Private Key");
     return
   }
   else {
-    
+    let obj={
+      address:this.props.Address,
+      index:this.state.Keyindex
+    }
+    console.log(obj)
+    axios.post('http://192.168.0.117:3003/existFile', obj)
+    .then(function (response) {
+      console.log(response.data.data);
+      that.decryptData(response.data.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
     // [post]
-    this.decryptData();
   }
 }
   
@@ -203,11 +217,11 @@ fileExtension = (file) => {
           <input 
           type = 'text'
           className = 'form-control'
-          onChange = {this.OnChangeKey}
+          onChange = {this.OnChangeKey.bind(this)}
           placeholder = 'Index'
           />
           <br/>
-          <Input type="textarea" name="text" id="exampleText" value = {this.state.decryptedData}/>
+          <Input type="textarea" name="text" id="exampleText" value = {this.state.decryptedData} disabled/>
             
           <br/>
           <Button

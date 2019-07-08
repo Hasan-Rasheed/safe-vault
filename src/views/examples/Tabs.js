@@ -52,7 +52,7 @@ export default class Example extends React.Component {
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1'); }}
             >
-              Upload File
+              WRITE
             </NavLink>
           </NavItem>
           <NavItem>
@@ -61,7 +61,7 @@ export default class Example extends React.Component {
               className={classnames({ active: this.state.activeTab === '2' })}
               onClick={() => { this.toggle('2'); }}
             >
-              Read Data
+              READ
             </NavLink>
           </NavItem>
         </Nav>
