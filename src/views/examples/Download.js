@@ -8,7 +8,9 @@ import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 // import {} from '../../store/actions/actions';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage } from "../../store/actions/actions";
+// import { getCurrentUserId, errorMessage } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
+
 import FileIcon, { defaultStyles } from 'react-file-icon';
 
 import {
@@ -47,13 +49,25 @@ class DownloadFile extends Component {
             currentStatus: '',
             fileUrl: "",
             fHash: '',
-            fileList: this.props.fileNames,
+            uid: this.props.currentUser,
+            fileList: [],
+            // fileList: this.props.fileNames,
             privateKey: '',
-            isButtonDisabled: this.props.file_selected
+            isButtonDisabled: this.props.file_selected,
+            
 
         }
         this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
     }
+
+    // async componentDidMount() {
+    //     let that = this;
+    //     // console.log(this.state.privateKey, "pass")
+       
+      
+         
+      
+    //   }
 
     OnChangePrivateKey = (event) => {
     
@@ -153,6 +167,8 @@ class DownloadFile extends Component {
     render() {
         return (
             <div>
+
+
                 <br />
                 {
                     // (this.props.diabled) ? () : ()
@@ -202,6 +218,11 @@ function mapDispatchToProp(dispatch) {
         getCurrentUserId: (user) => {
             dispatch(getCurrentUserId(user));
         }
+        ,
+    
+    getFileNames: (filenames) => {
+      dispatch(getFileNames(filenames));
+    }
     })
 }
 export default connect(mapStateToProp, mapDispatchToProp)(DownloadFile);

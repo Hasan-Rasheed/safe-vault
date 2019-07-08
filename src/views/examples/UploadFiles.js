@@ -6,8 +6,8 @@ import sha256 from 'sha256';
 import { connect } from 'react-redux';
 import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
 import Download from './Download'
-import FileIcon, { defaultStyles } from 'react-file-icon';
-import { Container, Row, Col } from 'react-grid-system';
+// import FileIcon, { defaultStyles } from 'react-file-icon';
+// import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
 import '../../assets/css/style.css';
 // reactstrap components
@@ -34,7 +34,9 @@ var keySize = 256;
 var iterations = 100;
 var fileName = ''
 var fileContent = ''
-var fileLength = 0;
+// var fileLength = 0;
+var encrypted = '';
+
 
 class UploadFiles extends Component {
 
@@ -52,53 +54,16 @@ class UploadFiles extends Component {
       fileList: [],
       extensions: [],
       // bgColor : "#e4ebee"
-      active: null
+      active: null,
+      Keyindex: '',
+      data:''
     }
 
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
 
 
   }
-   async componentDidMount() {
-    let that = this;
-    // console.log(this.state.privateKey, "pass")
-    console.log(this.props.currentUser, "checking dataa")
-
-     await firebase.firestore().collection('userData').doc(this.state.uid).onSnapshot(function (snapshot) {
-      if (snapshot.exists) {
-
-      //  that.state.fileList = snapshot.data().files;
-       
-        that.setState({fileList: snapshot.data().files})
-         
-        console.log(that.state.fileList)
-        that.props.getFileNames(that.state.fileList)
-        fileLength = snapshot.data().files.length;
-        console.log(fileLength)
-
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    });
-  //  }
-    // for (var i = 0; i < fileLength; i++) {
-
-    //   console.log(that.state.fileList[i])
-    //   let fileList = that.state.fileList
-
-    //   let extension = fileList[i].slice((fileList[i].lastIndexOf(".") - 1 >>> 0) + 2);
-    //   this.setState({extensions: extension })
-    //   console.log(this.state.extensions, "file extensions")
-
-
-
-    // }
-
-    // console.log(this.state.extensions);
-     
-  
-  }
+   
 
 
   handleRequestClose = () => {
@@ -130,7 +95,7 @@ class UploadFiles extends Component {
   }
 
 
-  onSaveData(event) {
+  onUploadData(event) {
     event.preventDefault();
 
     if (fileHash === '') {
@@ -201,8 +166,19 @@ class UploadFiles extends Component {
     this.setState({ buffer: buffer });
     let file = this.state.buffer;
     let that = this;
+   
+    console.log(fileHash)
+    fileHash = JSON.stringify(fileHash);
+    // alert("Do you want to continue")
+    let obj={
+      address:this.props.Address, 
+      data:fileHash
+    }
+    await axios.post('http://192.168.0.117:3003/sendHash' ,obj)
+  .then(response => {
+    alert("Your Transaction has been done ");
     var storageRef = firebase.storage().ref(uid)
-    var uploadTask = await storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
+   storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
       console.log('Uploaded a Blob or File');
       that.setState({ currentStatus: "File Uploaded" })
       firebase.firestore().collection('userData').doc(this.state.uid).update({
@@ -213,16 +189,6 @@ class UploadFiles extends Component {
     }).catch(errr => {
       console.log("data storage error " + errr)
     })
-    console.log(fileHash)
-    fileHash = JSON.stringify(fileHash);
-    // alert("Do you want to continue")
-    let obj={
-      address:this.props.Address, 
-      data:fileHash
-    }
-    await axios.get('http://192.168.0.117:3003/sendHash' ,obj)
-  .then(response => {
-    alert("Your Transaction has been done ");
     // console.log(response.data);
   })
   .catch(error => {
@@ -231,36 +197,83 @@ class UploadFiles extends Component {
   });
   };
 
-  handleLabelClick(filename){
 
-    if (this.state.active === filename) {
-      this.setState({active : null})
-    } else {
-      this.setState({active : filename})
-    }
+  OnChangeData = (event) => {
     
-    console.log(filename)
-    let file_Hash = sha256(utf8.encode(filename));
-    console.log(file_Hash)
-    this.props.getFileHash(file_Hash);
-    this.props.isFileSelected(true);
-    // this.setState({bgColor: "blue"})
+    this.setState({data:event.target.value })
+  }
+
+  OnChangeKey = (event) => {
     
-    // <Download/>
+    this.setState({Keyindex:event.target.value })
   }
-    // console.log(filename)
-  myColor(filename) {
-    if (this.state.active === filename) {
-      return "#b2b2e0";
-    }
-    return "";
+
+
+onSaveData(event) {
+  event.preventDefault();
+
+  console.log(this.state.privateKey, "password")
+  if (this.state.privateKey === '') {
+    alert("Enter you Private Key");
+    return
   }
-  fileExtension = (file) => {
-    let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
-    return (
-     <FileIcon style={{ align :'center'}} color = "#e4ebee" extension = {extension} {...defaultStyles[extension]} className = "card-icon"  size={50} /> 
-    )
+  else {
+    this.encryptData();
   }
+}
+
+encryptData = () => {
+  // this.setState({ currentStatus: "Encrypting and uploading file. Please wait.." })
+  console.log(this.state.data);
+ encrypted = CryptoJS.AES.encrypt(this.state.data, this.state.privateKey)
+  console.log( encrypted.toString(), "encrypted data")
+  console.log(this.props.Address,"address")
+  let obj={
+    address: this.props.Address,
+    index:this.state.Keyindex,
+    data:encrypted.toString()
+  }
+  console.log(obj)
+  
+  axios.post('http://192.168.0.117:3003/sendData', obj)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+  
+};
+  // handleLabelClick(filename){
+
+  //   if (this.state.active === filename) {
+  //     this.setState({active : null})
+  //   } else {
+  //     this.setState({active : filename})
+  //   }
+    
+  //   console.log(filename)
+  //   let file_Hash = sha256(utf8.encode(filename));
+  //   console.log(file_Hash)
+  //   this.props.getFileHash(file_Hash);
+  //   this.props.isFileSelected(true);
+  //   // this.setState({bgColor: "blue"})
+    
+  //   // <Download/>
+  // }
+  //   // console.log(filename)
+  // myColor(filename) {
+  //   if (this.state.active === filename) {
+  //     return "#b2b2e0";
+  //   }
+  //   return "";
+  // }
+  // fileExtension = (file) => {
+  //   let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
+  //   return (
+  //    <FileIcon style={{ align :'center'}} color = "#e4ebee" extension = {extension} {...defaultStyles[extension]} className = "card-icon"  size={50} /> 
+  //   )
+  // }
 
   render() {
     const {
@@ -271,7 +284,7 @@ class UploadFiles extends Component {
       <div className = "form-styling ">
          <h1>Upload Files</h1>
 
-        <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
+        <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
           <div className='form-group'>
             <Input
               type='file'
@@ -308,38 +321,41 @@ class UploadFiles extends Component {
 
         <br />
        
-        <Container>
-        <Row className = "card-spacing">
-          
-             
- {     
-  this.state.fileList.map((file ) => {
-          return (
-           
-               <Col className = "card-spacing" lg={2} md={2} xsm = {2} >
-               <div>
-                 <Card className = "card-background" style={ { backgroundColor: this.myColor(file), fontweight:'bold'}} onClick ={() => this.handleLabelClick(file)}>
-                 <CardBody>
-                   {this.fileExtension(file)}
-                   <CardText className="file-name" >{file}</CardText>
-                   
-                   {/* <CardTitle >{file}</CardTitle> */}
-                 </CardBody>
-                 </Card>
-               </div>
-           </Col>
-       )
-              }
-            )
-  
+        <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
+      <div className = "form-styling ">
+      <h1>Data Write</h1>
+          <input 
+          type = 'password'
+          className = 'form-control'
+          onChange = {this.OnChangePrivateKey.bind(this)}
+          placeholder = 'Enter Your Private Key to Encrypt the Data'
+          />
+          <br/>
+          <input 
+          type = 'text'
+          className = 'form-control'
+          onChange = {this.OnChangeKey.bind(this)}
+          placeholder = 'Index'
+          />
+          <br/>
+          <Input type="textarea" name="text" id="exampleText" 
+          onChange={this.OnChangeData.bind(this)}
+          />
+          <br/>
+          <Button
 
-    
-  } 
-  </Row>
-  </Container>
-  <div className = "button-alignment">
- <Download/>
-  </div>
+            color="primary"
+            type="submit" name="action"
+            title='submit'
+            // onClick = {this.onSave}
+
+          >
+            Save
+        </Button>
+        <hr/>
+        </div>
+</form>
+  
       </div>
  
     );
