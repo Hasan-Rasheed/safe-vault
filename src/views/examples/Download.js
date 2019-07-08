@@ -54,7 +54,7 @@ class DownloadFile extends Component {
             // fileList: this.props.fileNames,
             privateKey: '',
             isButtonDisabled: this.props.file_selected,
-            
+            checkExist:false
 
         }
         this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -95,6 +95,7 @@ class DownloadFile extends Component {
     }
 
     async getData() {
+        let that=this;
         fileHash = this.props.file_hash;
         let obj={
             address:this.props.Address,
@@ -104,6 +105,7 @@ class DownloadFile extends Component {
     axios.post('http://192.168.0.117:3003/existHash', obj)
     .then(function (response) {
       console.log(response);
+      that.setState({ checkExist: response })
     })
     .catch(function (error) {
       console.log(error);
@@ -124,7 +126,10 @@ class DownloadFile extends Component {
 
     async onButtonClick(event) {
         await this.onReadData(event);
-    //    this.onDownloadFile(event);
+        if(this.state.checkExist){
+
+               this.onDownloadFile(event);
+        }
     }
 
 
