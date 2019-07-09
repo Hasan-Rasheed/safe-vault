@@ -12,6 +12,7 @@ import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
 import '../../assets/css/style.css';
 // reactstrap components
+import {api_url} from '../../config/api'
 import {
   Button,
   Card,
@@ -177,7 +178,7 @@ class UploadFiles extends Component {
       address:this.props.Address, 
       data:fileHash
     }
-    await axios.post('http://localhost:3003/sendHash' ,obj)
+    await axios.post(api_url+'/sendHash' ,obj)
   .then(response => {
     alert("Your Transaction has been done ");
     var storageRef = firebase.storage().ref(uid)
@@ -238,7 +239,7 @@ encryptData = () => {
   }
   console.log(obj)
   
-  axios.post('http://localhost:3003/sendData', obj)
+  axios.post(api_url+'/sendData', obj)
   .then(function (response) {
     console.log(response);
   })

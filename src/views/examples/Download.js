@@ -10,7 +10,7 @@ import sha256 from 'sha256';
 import { connect } from 'react-redux';
 // import { getCurrentUserId, errorMessage } from "../../store/actions/actions";
 import { getCurrentUserId, errorMessage, getFileNames ,getFileHash ,getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
-
+// import {api_url} from '../../config/api'
 import FileIcon, { defaultStyles } from 'react-file-icon';
 
 import {
@@ -32,6 +32,7 @@ import {
     Col
 } from "reactstrap";
 import { isLabeledStatement } from "typescript";
+import { api_url } from "../../config/api";
 
 const axios = require('axios');
 // Decryption parameters
@@ -102,7 +103,7 @@ class DownloadFile extends Component {
             data:fileHash
         }
         console.log(obj)
-    axios.post('http://192.168.0.115:3003/existHash', obj)
+    axios.post(api_url+'/existHash', obj)
     .then(function (response) {
       console.log(response);
       that.setState({ checkExist: response.data.data })

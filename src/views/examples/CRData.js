@@ -1,4 +1,5 @@
 import React from 'react';
+import {api_url} from '../../config/api'
 import {Input,
   Button, 
   Card,
@@ -115,7 +116,7 @@ let that=this;
       index:this.state.Keyindex
     }
     console.log(obj)
-    axios.post('http://192.168.0.115:3003/existFile', obj)
+    axios.post(api_url+'/existFile', obj)
     .then(function (response) {
       console.log(response.data.data);
       that.decryptData(response.data.data);
