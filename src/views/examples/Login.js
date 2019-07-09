@@ -51,52 +51,38 @@ signin(event) {
             password: this.state.password
         }
         console.log(user)
-        // this.props.history.push('/admin/index');
         firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then((snapshot)=> {
-          // this.props.history.push('/admin/index');
           let currentUser = snapshot.user.uid;
           console.log(snapshot.user.uid);
           this.props.currentUserId(snapshot.user.uid);
           console.log(user.password)
-        
-        //  let currentuser =  firebase.auth().snapshot;
-        //  console.log(currentuser);
-        // var userId = firebase.auth().currentUser.uid;
+      
         let that = this;
 return firebase.firestore().collection('userData').doc(currentUser).get().then(function(snapshot) {
  console.log(snapshot);
  if (snapshot.exists) {
-  //  this.props.userLoggedinOrRegistered("LoggedIn");
   console.log("Document data:", snapshot.data().userName);
   that.props.updateUserName(snapshot.data().userName);
             that.props.history.push('/admin/index');
-            // that.props.history.push('/admin/tabs');
 
 } else {
-  // doc.data() will be undefined in this case
+
 }
  
-  // ...
-});
-          // this.props.history.push('/admin/index');
 
-        // this.props.signinWithEmailPassword(user);
+});
+        
       })
       .catch((err) => {
-        // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-        // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
+        
         console.log(err.message);
+        this.setState({ email:"",password:""})
+
         this.setState({loginError: 'Invalid Email Address or Password'})
 
     })
-        // .then((snapshot)=>{
-        //   console.log(snapshot);
-        // })
-        // .catch((error)=>{
-        //   console.log(error.message)
-        // })
-        // console.log(this.props.signinWithEmailPassword(user));
+      
     }
 }
 
@@ -118,41 +104,7 @@ componentWillMount(){
       <>
         <Col lg="5" md="7">
           <Card className="bg-secondary shadow border-0">
-            {/* <CardHeader className="bg-transparent pb-5">
-              <div className="text-muted text-center mt-2 mb-3">
-                <small>Sign in with</small>
-              </div>
-              <div className="btn-wrapper text-center">
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/github.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Github</span>
-                </Button>
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/google.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Google</span>
-                </Button>
-              </div>
-            </CardHeader> */}
+          
             <CardBody className="px-lg-5 py-lg-5">
               <div className="text-center text-muted mb-4">
                 <h1>Login</h1>
@@ -190,24 +142,7 @@ componentWillMount(){
               </Form>
             </CardBody>
           </Card>
-          {/* <Row className="mt-3">
-            <Col xs="6">
-              <a
-                className="text-light"
-                href="#pablo"
-                onClick={e => e.preventDefault()}
-              >
-                <small>Forgot password?</small>
-              </a>
-            </Col>
-            <Col className="text-right" xs="6">
-             
-              <NavLink className="text-light" to="/auth/register" tag={Link}>
-                   
-                    <small>Create new account</small>
-                  </NavLink>
-            </Col>
-          </Row> */}
+         
         </Col>
       </>
     );
@@ -217,11 +152,9 @@ componentWillMount(){
 function mapStateToProp(state) {
   console.log(state);
   return ({
-      // progressBarDisplay: state.root.progressBarDisplay,
+      
       errorMsg : state.root.errorMessage,
-      // userName : state.root.userName,
-      // private_Key : state.root.userprivatekey
-      // currentuserId : state.root.currentUserId
+   
       
   })
 }

@@ -10,7 +10,8 @@ const INITIAL_STATE = {
     file_hash: '',
     userprivatekey: [],
     notify: '',
-    address: ''
+    address: '',
+    payment:false
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -84,12 +85,12 @@ export default (state = INITIAL_STATE, action) => {
                 selection: action.payload
 
             })
-        // case 'TYPE':
-        // { console.log(action.payload) }
-        // return ({
-        //   ...state,
-        //     type: action.payload
-        // })
+        case 'PAYMENT':
+        { console.log(action.payload) }
+        return ({
+          ...state,
+            payment: action.payload
+        })
         default:
             return state;
     }

@@ -29,7 +29,11 @@
     background-color: #b2b2e0;
    cursor : pointer
 }
-
+.heading{
+    padding-top: 40px;
+    font-size: 25px;
+    font-family: sans-serif
+}
 .button-styling{
     overflow: hidden;
     display: inline-block;

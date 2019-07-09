@@ -103,7 +103,7 @@ class DownloadFile extends Component {
             data:fileHash
         }
         console.log(obj)
-    axios.post(api_url+'/existHash', obj)
+  await  axios.post(api_url+'/existHash', obj)
     .then(function (response) {
       console.log(response);
       that.setState({ checkExist: response.data.data })
@@ -128,7 +128,7 @@ class DownloadFile extends Component {
     async onButtonClick(event) {
         await this.onReadData(event);
         if(this.state.checkExist){
-
+console.log(this.state.checkExist,"existing")
                this.onDownloadFile(event);
         }
     }
@@ -137,6 +137,7 @@ class DownloadFile extends Component {
     async onDownloadFile(event) {
 
         event.preventDefault();
+        this.setState({ currentStatus: "Waiting for the Response from the Blockchain" })
 
         let uid = this.props.currentUser;
         var storageRef = firebase.storage().ref(uid)

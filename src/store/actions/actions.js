@@ -216,3 +216,10 @@ export function checkIfHashExist(hash){
         console.log(err)
     })
 }
+
+export function isPaymentDone(payment){
+    console.log(payment)
+    return dispatch => {
+        dispatch({ type: 'PAYMENT' , paylod: payment})
+    }
+}
