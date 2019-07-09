@@ -41,7 +41,8 @@ class UploadFiles extends Component {
       Keyindex: '',
       data: '',
       flag: false,
-      payment: true
+      payment: true,
+      currentWriteStatus:''
     }
 
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -215,6 +216,8 @@ class UploadFiles extends Component {
   }
 
   encryptData = () => {
+    this.setState({ currentWriteStatus: "Encrypting..." })
+
     console.log(this.state.data);
     encrypted = CryptoJS.AES.encrypt(this.state.data, this.state.privateKey)
     console.log(encrypted.toString(), "encrypted data")
@@ -225,12 +228,17 @@ class UploadFiles extends Component {
       data: encrypted.toString()
     }
     console.log(obj)
+    this.setState({ currentWriteStatus: "Waiting for the Response " })
 
     axios.post(api_url + '/sendData', obj)
       .then(function (response) {
+        this.setState({ currentWriteStatus: "Your Data has been saved" })
+
         console.log(response);
       })
       .catch(function (error) {
+        this.setState({ currentWriteStatus: "Something went wrong please try again" })
+
         console.log(error);
       });
 
@@ -314,6 +322,8 @@ class UploadFiles extends Component {
                     {/* <CreditCard/> */}
                     <span className="button-span"> Save</span>
                   </button>
+                  <br />
+                <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}</label>
                   {/* <hr/> */}
                 </div>
               </form>

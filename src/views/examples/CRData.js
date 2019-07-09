@@ -207,7 +207,7 @@ fileExtension = (file) => {
         <form className='add-product button-alignment' onSubmit={this.onReadData.bind(this)}>
         <div >
 
-        <h1>Data Read</h1>
+        <h1 className="heading">Read Data</h1>
         <input 
           type = 'password'
           className = 'form-control'
