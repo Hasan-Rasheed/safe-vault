@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import firebase from 'firebase'
 import { signupAction, errorMessage, getCurrentUserId, getUserPrivateKey, getAddress, getNotification, updateUserName } from '../../store/actions/actions';
 import { connect } from 'react-redux';
-import history from '../../history';
 import EthCrypto from 'eth-crypto';
 
 
@@ -10,7 +9,6 @@ import EthCrypto from 'eth-crypto';
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
   FormGroup,
   Form,
@@ -18,7 +16,6 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  Row,
   Col
 } from "reactstrap";
 
@@ -29,42 +26,19 @@ class Register extends Component {
       userName: '',
       email: '',
       password: '',
-      registerError:'',
-      // uid:''
+      registerError: '',
     }
     this.signup = this.signup.bind(this)
     this._onChangeEmail = this._onChangeEmail.bind(this)
     this._onChangeUserName = this._onChangeUserName.bind(this)
     this._onChangePassword = this._onChangePassword.bind(this)
-    // this._onChangeEmail = this._onChangeEmail.bind(this);
-    // this._onChangePassword = this._onChangePassword.bind(this);
   }
 
-  //   signup(user) { 
-  //     return firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
-  //   .then((createdUser) => {
-  //       console.log('signed up successfully', createdUser.uid);
-  //       delete user.password;
-  //       user.uid = createdUser.uid;
-  //       // firebase.database().ref('users/' + createdUser.uid + '/').set(user)
-  //       //     .then(() => {
-  //       //         // dispatch({ type: 'CURRENT_USER_UID', payload: createdUser.uid })
-  //       //         // dispatch({ type: "IS_LOGIN", payload: true })
-  //       //         // history.push('/home');
-  //       //         console.log('successful');
-  //       //     })
-  //   })
-  //   .catch((err) => {
-  //       // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-  //       // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
-  //       // console.log(err)
-  //       console.log('error');
-  //   })
-  // }
+
   signup(event) {
-    // event.preventDefault();
     if ((this.state.userName === '' || this.state.email === '' || this.state.password === '')) {
-      this.props.errorMessage('All the fields are required!');
+      this.setState({ registerError: 'All Fields are required.' })
+
     }
     else {
       let user = {
@@ -73,10 +47,9 @@ class Register extends Component {
         password: this.state.password,
         uid: '',
         files: [],
-        address:''
+        address: ''
       }
-      // this.props.signupwithEmailPassword(user);
-      // console.log(user);
+
       firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
         .then((snapshot) => {
           console.log(snapshot)
@@ -99,38 +72,27 @@ class Register extends Component {
               const identity = EthCrypto.createIdentity();
               console.log(identity.address, "Address");
               db.collection('userData').doc(currentUser).update({
-                address:identity.address
+                address: identity.address
               })
               this.props.userAddress(identity.address);
               this.props.updateUserName(user.userName);
+              this.setState({userName:"", email:"",password:""})
               this.props.history.push('/admin/index');
             })
 
             .catch((err) => {
-              // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-              // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
-              // console.log(err)
-              
+              this.setState({userName:"", email:"",password:""})
+
+              alert("Something went wrong! Please Try again")
               console.log('error', err.message);
             })
-          //       db.ref('userData/' + currentUser + '/').set(user)
-          //           .then(() => {
-          //               console.log("USER ADDED TO FIREBASE")
-          //   })
-          //   .catch((err) => {
-          //           // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-          //           // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
-          //           // console.log(err)
-          //           console.log('error',err.message);
-          // })
+
         })
         .catch((err) => {
-          // dispatch({ type: "SHOW_PROGRESS_BAR", payload: false })
-          // dispatch({ type: "ERROR_MESSAGE", payload: err.message })
-          // console.log(err)
-          // alert("ERROR: " + err.message)
+          this.setState({userName:"", email:"",password:""})
+
           console.log('error', err.message);
-          this.setState({registerError: 'The email address is already in use by another account.'})
+          this.setState({ registerError: 'The email address is already in use by another account.' })
         })
     }
   }
@@ -140,7 +102,7 @@ class Register extends Component {
       email: event.target.value
 
     })
-    // console.log(this.email);
+
   }
   _onChangeUserName(event) {
     this.setState({
@@ -158,41 +120,7 @@ class Register extends Component {
       <>
         <Col lg="6" md="8">
           <Card className="bg-secondary shadow border-0">
-            {/* <CardHeader className="bg-transparent pb-5">
-              <div className="text-muted text-center mt-2 mb-4">
-                <small>Sign up with</small>
-              </div>
-              <div className="text-center">
-                <Button
-                  className="btn-neutral btn-icon mr-4"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/github.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Github</span>
-                </Button>
-                <Button
-                  className="btn-neutral btn-icon"
-                  color="default"
-                  href="#pablo"
-                  onClick={e => e.preventDefault()}
-                >
-                  <span className="btn-inner--icon">
-                    <img
-                      alt="..."
-                      src={require("assets/img/icons/common/google.svg")}
-                    />
-                  </span>
-                  <span className="btn-inner--text">Google</span>
-                </Button>
-              </div>
-            </CardHeader> */}
+
             <CardBody className="px-lg-5 py-lg-5">
               <div className="text-center text-muted mb-4">
                 <h1>Create Account</h1>
@@ -228,10 +156,9 @@ class Register extends Component {
                     <Input placeholder="Password" name="password" type="password" value={this.state.password} onChange={this._onChangePassword} />
                   </InputGroup>
                 </FormGroup>
-                <div className="text-center">
-                <br/>
-                  <span style = {{color : "red" ,fontweight: 'bold', fontSize: '15px'}}>{this.state.registerError}</span>
-               
+                <div className="text-center">   
+                  <span style={{ color: "red", fontweight: 'bold', fontSize: '15px' }}>{this.state.registerError}</span>
+                  {(this.state.registerError!= "") ? <br/>:""}
                   <Button className="mt-4" color="primary" type="button" onClick={this.signup}>
                     Create account
                   </Button>
@@ -247,7 +174,6 @@ class Register extends Component {
 }
 function mapStateToProp(state) {
   return ({
-    // progressBarDisplay : state.root.progressBarDisplay,
     errorMsg: state.root.errorMessage,
 
   })

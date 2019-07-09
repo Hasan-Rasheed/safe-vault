@@ -31,7 +31,6 @@ class Login extends Component {
     this.state = {
         email: '',
         password: '',
-        privateKey: '',
         loginError: '',
     }
     this.signin = this.signin.bind(this);
@@ -56,7 +55,6 @@ signin(event) {
         firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then((snapshot)=> {
           // this.props.history.push('/admin/index');
-          this.state.privateKey = this.state.password;
           let currentUser = snapshot.user.uid;
           console.log(snapshot.user.uid);
           this.props.currentUserId(snapshot.user.uid);
