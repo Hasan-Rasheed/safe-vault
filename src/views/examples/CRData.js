@@ -115,6 +115,8 @@ let that=this;
       address:this.props.Address,
       index:this.state.Keyindex
     }
+    this.setState({ currentStatus: "Waiting for the Response " })
+
     console.log(obj)
     axios.post(api_url+'/existFile', obj)
     .then(function (response) {
@@ -129,10 +131,13 @@ let that=this;
 }
   
 decryptData = (encryptedData) => {
+  this.setState({ currentStatus: "Decrypting Data " })
 
   var decrypted = CryptoJS.AES.decrypt(encryptedData, this.state.privateKey).toString(CryptoJS.enc.Latin1);
   this.setState({decryptedData: decrypted})
   console.log(decrypted, "decrypted data")
+  this.setState({ currentStatus: "" })
+
 }
 
 handleLabelClick(filename){
@@ -235,6 +240,9 @@ fileExtension = (file) => {
           >
           <span className = "button-span">  Retreive</span>
         </button>
+        <br/>
+        <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
+
       </div>
       </form>
 </div>
