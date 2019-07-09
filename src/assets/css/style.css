@@ -72,7 +72,7 @@
 }
 
 .form-styling{
-    margin: 0px 200px;
+    margin: 0px 200px 32px;
     /* border: 1px solid #dbdbdb; */
     box-shadow: 0 0 9px rgba(0, 0, 0, 0.1);
 }
@@ -128,7 +128,7 @@
   /* tablets */
   @media (max-width: 991px) {
     .form-styling{
-        margin: 0px 50px;
+        margin: 0px 50px 32px;
     }
     .container-fluid{
         width: 30% !important
@@ -138,7 +138,7 @@
   /* only small tablets */
   @media (min-width: 768px) and (max-width: 991px) {
     .form-styling{
-        margin: 0px 100px
+        margin: 0px 100px 32px;
     }
     .container-fluid{
         width: 10% !important

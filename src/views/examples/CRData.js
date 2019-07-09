@@ -224,7 +224,7 @@ fileExtension = (file) => {
           <Input type="textarea" name="text" id="exampleText" value = {this.state.decryptedData} disabled/>
             
           <br/>
-          <Button
+          <button
               className = "button-styling"
 
             // color="primary"
@@ -233,7 +233,7 @@ fileExtension = (file) => {
 
           >
           <span className = "button-span">  Retreive</span>
-        </Button>
+        </button>
       </div>
       </form>
 </div>

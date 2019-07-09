@@ -345,7 +345,7 @@ encryptData = () => {
           onChange={this.OnChangeData.bind(this)}
           />
           <br/>
-          <Button
+          <button
               className = "button-styling"
             // color="primary"
             type="submit" name="action"
@@ -355,7 +355,7 @@ encryptData = () => {
           >
             {/* <CreditCard/> */}
            <span className = "button-span"> Save</span>
-        </Button>
+        </button>
         {/* <hr/> */}
         </div>
 </form>

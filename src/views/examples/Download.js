@@ -203,13 +203,13 @@ class DownloadFile extends Component {
                 />
               
                 <br />
-                <Button onClick={this.onButtonClick.bind(this)}
+                <button onClick={this.onButtonClick.bind(this)}
                                   className = "button-styling"
 
                     ><span className ="button-span">
                         Download File
                         </span>
-                        </Button>
+                        </button>
                                             <label style={{color: 'blue' }}>{this.state.currentStatus}</label>
 
 
