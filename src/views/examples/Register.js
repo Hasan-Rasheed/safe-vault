@@ -3,6 +3,8 @@ import firebase from 'firebase'
 import { signupAction, errorMessage, getCurrentUserId, getUserPrivateKey, getAddress, getNotification, updateUserName } from '../../store/actions/actions';
 import { connect } from 'react-redux';
 import EthCrypto from 'eth-crypto';
+import loader from '../../assets/img/icons/Spinner.gif';
+
 
 
 // reactstrap components
@@ -27,6 +29,8 @@ class Register extends Component {
       email: '',
       password: '',
       registerError: '',
+      loading: ''
+
     }
     this.signup = this.signup.bind(this)
     this._onChangeEmail = this._onChangeEmail.bind(this)
@@ -34,7 +38,11 @@ class Register extends Component {
     this._onChangePassword = this._onChangePassword.bind(this)
   }
 
+  componentWillMount() {
+    // this.loading = this.loading.bind(this);
+    this.setState({ loading: false })
 
+  }
   signup(event) {
     if ((this.state.userName === '' || this.state.email === '' || this.state.password === '')) {
       this.setState({ registerError: 'All Fields are required.' })
@@ -49,11 +57,13 @@ class Register extends Component {
         files: [],
         address: ''
       }
+      this.setState({ loading: true });
 
       firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
         .then((snapshot) => {
           console.log(snapshot)
           console.log('signed up successfully', snapshot.user.uid);
+
           this.props.userPrivateKey(user.password)
           delete user.password;
           this.props.userLoggedinOrRegistered("Registered")
@@ -76,12 +86,14 @@ class Register extends Component {
               })
               this.props.userAddress(identity.address);
               this.props.updateUserName(user.userName);
-              this.setState({userName:"", email:"",password:""})
+              this.setState({ userName: "", email: "", password: "" })
+              this.setState({ loading: false });
+
               this.props.history.push('/admin/index');
             })
 
             .catch((err) => {
-              this.setState({userName:"", email:"",password:""})
+              this.setState({ userName: "", email: "", password: "" })
 
               alert("Something went wrong! Please Try again")
               console.log('error', err.message);
@@ -89,7 +101,7 @@ class Register extends Component {
 
         })
         .catch((err) => {
-          this.setState({userName:"", email:"",password:""})
+          this.setState({ userName: "", email: "", password: "" })
 
           console.log('error', err.message);
           this.setState({ registerError: 'The email address is already in use by another account.' })
@@ -133,7 +145,7 @@ class Register extends Component {
                         <i className="ni ni-hat-3" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Name" name="userName" type="text" value={this.state.userName} onChange={this._onChangeUserName} />
+                    <Input placeholder="Name" name="userName" type="username" value={this.state.userName} onChange={this._onChangeUserName} />
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -156,9 +168,11 @@ class Register extends Component {
                     <Input placeholder="Password" name="password" type="password" value={this.state.password} onChange={this._onChangePassword} />
                   </InputGroup>
                 </FormGroup>
-                <div className="text-center">   
+                <div className="text-center">
                   <span style={{ color: "red", fontweight: 'bold', fontSize: '15px' }}>{this.state.registerError}</span>
-                  {(this.state.registerError!= "") ? <br/>:""}
+                  {(this.state.registerError != "") ? <br /> : ""}
+                  <span>{this.state.loading && <img src={loader} style={{ height: "3em" }} />}</span>
+                  <br />
                   <Button className="mt-4" color="primary" type="button" onClick={this.signup}>
                     Create account
                   </Button>

@@ -13,6 +13,7 @@ import { api_url } from '../../config/api'
 import {
   Input,
 } from "reactstrap";
+import loader from '../../assets/img/icons/Spinner.gif';
 
 const utf8 = require('utf8');
 var fileHash = '';
@@ -41,8 +42,11 @@ class UploadFiles extends Component {
       Keyindex: '',
       data: '',
       flag: false,
-      payment: true,
-      currentWriteStatus:''
+      payment: this.props.payment,
+      currentWriteStatus:'',
+      loading: '',
+      loadingWrite:''
+
     }
 
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -50,7 +54,11 @@ class UploadFiles extends Component {
 
   }
 
+  componentWillMount() {
+    // this.loading = this.loading.bind(this);
+    this.setState({ loading: false })
 
+  }
 
   handleRequestClose = () => {
     this.setState({
@@ -61,6 +69,7 @@ class UploadFiles extends Component {
 
   encrypt(msg, pass) {
     this.setState({ currentStatus: "Encrypting data. Please wait.." })
+    this.setState({ loading: true });
 
     var salt = CryptoJS.lib.WordArray.random(128 / 8);
     var key = CryptoJS.PBKDF2(pass, salt, {
@@ -82,6 +91,7 @@ class UploadFiles extends Component {
 
 
   async onUploadData(event) {
+    let that = this;
     event.preventDefault();
 
     if (fileHash === '' ) {
@@ -93,13 +103,12 @@ class UploadFiles extends Component {
       alert("All the fields are required");
       return
     }
-    else {
-      // this.setState({flag : true})
-      if( this.state.payment===true){
+    else if( that.state.payment==true){
       await this.uploadFile()
     }
+      
   }
-  }
+  
 
   OnChangePrivateKey = (event) => {
 
@@ -109,6 +118,8 @@ class UploadFiles extends Component {
 
   uploadFile = async () => {
     this.setState({ currentStatus: "Encrypting and uploading file. Please wait.." })
+    this.setState({ loading: true });
+
     console.log(fileContent);
     var encrypted = CryptoJS.AES.encrypt(fileContent, this.state.privateKey)
 
@@ -153,21 +164,27 @@ class UploadFiles extends Component {
     let that = this;
 
     console.log(fileHash)
-    fileHash = JSON.stringify(fileHash);
+    // fileHash = JSON.stringify(fileHash);
     // alert("Do you want to continue")
     let obj = {
       address: this.props.Address,
       data: fileHash
     }
+
+    console.log(obj)
+
+    // let that = this;
     await axios.post(api_url + '/sendHash', obj)
+    
       .then(response => {
-        this.setState({ currentStatus: "Waiting for the Response of Transaction" })
         alert("Your Transaction has been done ");
         
         var storageRef = firebase.storage().ref(uid)
         storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
           console.log('Uploaded a Blob or File');
           that.setState({ currentStatus: "File Uploaded" })
+          that.setState({ loading: false });
+
           firebase.firestore().collection('userData').doc(this.state.uid).update({
             files: firebase.firestore.FieldValue.arrayUnion(fileName)
 
@@ -175,16 +192,19 @@ class UploadFiles extends Component {
           // that.setState({fileList : fileName});
         }).catch(errr => {
           alert("Something went wrong with the firebase please try again")
-          this.setState({privateKey:""})
+
+          that.setState({privateKey:""})
           console.log("data storage error " + errr)
         })
         
       })
       .catch(error => {
-        this.setState({ currentStatus: "Waiting for the Response of Transaction" })
-
+        that.setState({ currentStatus: "Waiting for the Response of Transaction" })
+        that.setState({ loading: true });
         alert("Your Transaction has been cancelled");
-        this.setState({ currentStatus: "" })
+        that.setState({ currentStatus: "" })
+        this.setState({ loading: false });
+
 
         // console.log(error);
       });
@@ -203,6 +223,7 @@ class UploadFiles extends Component {
 
 
   onSaveData(event) {
+    let that = this
     event.preventDefault();
 
     console.log(this.state.privateKey, "password")
@@ -210,13 +231,24 @@ class UploadFiles extends Component {
       alert("Enter you Private Key");
       return
     }
-    else {
-      this.encryptData();
+    else if (this.state.Keyindex === '') {
+      alert("Enter you Index Key");
+      return
     }
-  }
+    else if(this.state.data===''){
+        alert("Please Enter you Text")
+        return
+      }
+    else if( that.state.payment==true){
+        this.encryptData();
+      }
+      
+    }
+  
 
   encryptData = () => {
     this.setState({ currentWriteStatus: "Encrypting..." })
+    this.setState({ loadingWrite: true });
 
     console.log(this.state.data);
     encrypted = CryptoJS.AES.encrypt(this.state.data, this.state.privateKey)
@@ -227,22 +259,28 @@ class UploadFiles extends Component {
       index: this.state.Keyindex,
       data: encrypted.toString()
     }
+    let that = this;
+
     console.log(obj)
-    this.setState({ currentWriteStatus: "Waiting for the Response " })
+    that.setState({ currentWriteStatus: "Waiting for the Response " })
+    that.setState({ loadingWrite: true });
 
     axios.post(api_url + '/sendData', obj)
       .then(function (response) {
-        this.setState({ currentWriteStatus: "Your Data has been saved" })
+        that.setState({ currentWriteStatus: "Your Data has been saved" })
+        that.setState({ loadingWrite: false });
 
         console.log(response);
       })
       .catch(function (error) {
-        this.setState({ currentWriteStatus: "Something went wrong please try again" })
+        that.setState({ currentWriteStatus: "Something went wrong please try again" })
+        that.setState({ loadingWrite: false });
 
         console.log(error);
       });
 
-  };
+  }
+
 
 
   render() {
@@ -282,7 +320,9 @@ class UploadFiles extends Component {
 
                 <CreditCard />
                 <br />
-                <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}</label>
+                <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
+                {/* <span>{this.state.loading && <img src={loader} style={{ height: "3em" }} />}</span> */}
+
                 <br />
 
               </form>
@@ -311,7 +351,7 @@ class UploadFiles extends Component {
                     onChange={this.OnChangeData.bind(this)}
                   />
                   <br />
-                  <button
+                  {/* <button
                     className="button-styling"
                     // color="primary"
                     type="submit" name="action"
@@ -319,11 +359,15 @@ class UploadFiles extends Component {
                   // onClick = {this.onSave}
 
                   >
-                    {/* <CreditCard/> */}
+                    {/* <CreditCard/> 
                     <span className="button-span"> Save</span>
-                  </button>
+                  </button> */}
+                                  <CreditCard />
+
                   <br />
-                <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}</label>
+                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
+                {/* <span>{this.state.loadingWrite && <img src={loader} style={{ height: "3em" }} />}</span> */}
+
                   {/* <hr/> */}
                 </div>
               </form>

@@ -205,6 +205,14 @@ export function getFileHash(file_hash) {
         dispatch({ type: 'File_Hash', payload: file_hash })
     }
 }
+export function isPaymentDone(payment){
+    console.log(payment)
+    return dispatch => {
+        console.log(payment)
+        dispatch({ type: 'PAYMENT' , payload: payment})
+    }
+    // console.log(payment)
+}
 export function checkIfHashExist(hash){
     firebase.database().ref('userData/'+firebase.auth().currentUser.uid+'/fileHash/'+hash).on('name').then(snapshot=>{
         if(snapshot.exists()){
@@ -217,9 +225,3 @@ export function checkIfHashExist(hash){
     })
 }
 
-export function isPaymentDone(payment){
-    console.log(payment)
-    return dispatch => {
-        dispatch({ type: 'PAYMENT' , paylod: payment})
-    }
-}
