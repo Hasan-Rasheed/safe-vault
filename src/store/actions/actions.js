@@ -213,6 +213,15 @@ export function isPaymentDone(payment){
     }
     // console.log(payment)
 }
+
+export function isWritePaymentDone(writepayment){
+    console.log(writepayment)
+    return dispatch => {
+        console.log(writepayment)
+        dispatch({ type: 'WRITE_PAYMENT' , payload: writepayment})
+    }
+    // console.log(payment)
+}
 export function checkIfHashExist(hash){
     firebase.database().ref('userData/'+firebase.auth().currentUser.uid+'/fileHash/'+hash).on('name').then(snapshot=>{
         if(snapshot.exists()){

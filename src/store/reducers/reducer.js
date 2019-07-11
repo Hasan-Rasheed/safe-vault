@@ -11,6 +11,7 @@ const INITIAL_STATE = {
     userprivatekey: [],
     notify: '',
     address: '',
+    writepayment:false,
     payment:false
 }
 
@@ -91,6 +92,12 @@ export default (state = INITIAL_STATE, action) => {
         return ({
           ...state,
             payment: action.payload
+        })
+        case 'WRITE_PAYMENT':
+        { console.log(action.payload) }
+        return ({
+          ...state,
+            writepayment: action.payload
         })
         default:
             return state;

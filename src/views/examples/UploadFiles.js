@@ -4,8 +4,10 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone, getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone, getUserPrivateKey, isWritePaymentDone,isFileSelected, getAddress } from "../../store/actions/actions";
 import CreditCard from './CreditCardTransaction'
+import CreditCardWrite from './CreditCardWrite'
+
 import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
 import '../../assets/css/style.css';
@@ -63,7 +65,15 @@ class UploadFiles extends Component {
     console.log(nextprops)
     console.log(nextprops.payment)
     // console.log("i am at CWRP")
+    console.log(nextprops.writepayment)
+
+    if(nextprops.payment){
     this.transactionSuccessful(nextprops.payment)
+    }
+    else if(nextprops.writepayment){
+      console.log(nextprops.writepayment)
+      this.onSaveData(nextprops.writepayment)
+    }
   }
 
   handleRequestClose = () => {
@@ -213,7 +223,7 @@ class UploadFiles extends Component {
         that.setState({ currentStatus: "" })
         this.setState({ loading: false });
         this.props.isPaymentDone(false)
-        
+
 
         // console.log(error);
       });
@@ -231,9 +241,9 @@ class UploadFiles extends Component {
   }
 
 
-  onSaveData(event) {
+  onSaveData(trans) {
     let that = this
-    event.preventDefault();
+    // event.preventDefault();
 
     console.log(this.state.privateKey, "password")
     if (this.state.privateKey === '') {
@@ -248,7 +258,7 @@ class UploadFiles extends Component {
         alert("Please Enter you Text")
         return
       }
-    else if( that.state.payment==true){
+    else if(trans){
         this.encryptData();
       }
       
@@ -278,12 +288,16 @@ class UploadFiles extends Component {
       .then(function (response) {
         that.setState({ currentWriteStatus: "Your Data has been saved" })
         that.setState({ loadingWrite: false });
+        that.props.isWritePaymentDone(false)
 
         console.log(response);
       })
       .catch(function (error) {
-        that.setState({ currentWriteStatus: "Something went wrong please try again" })
+        alert("Your Transaction has been cancelled");
+        that.setState({ currentStatus: "" })
         that.setState({ loadingWrite: false });
+        that.props.isWritePaymentDone(false)
+
 
         console.log(error);
       });
@@ -377,7 +391,7 @@ class UploadFiles extends Component {
                     {/* <CreditCard/> 
                     <span className="button-span"> Save</span>
                   </button> */}
-                                  <CreditCard />
+                                  <CreditCardWrite />
 
                   <br />
                 <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
@@ -405,7 +419,9 @@ function mapStateToProp(state) {
     userPrivateKey: state.root.userprivatekey,
     notification: state.root.notify,
     Address: state.root.address,
-    payment: state.root.payment
+    payment: state.root.payment,
+    writepayment: state.root.writepayment
+
   })
 }
 
@@ -438,6 +454,9 @@ function mapDispatchToProp(dispatch) {
     },
     isPaymentDone: (transaction) => {
       dispatch(isPaymentDone(transaction));
+    },
+    isWritePaymentDone: (transaction) => {
+      dispatch(isWritePaymentDone(transaction));
     }
 
   })
