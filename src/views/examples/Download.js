@@ -371,6 +371,10 @@ function mapDispatchToProp(dispatch) {
     isFileSelected: (selection) => {
         dispatch(isFileSelected(selection));
       },
+    
+    userAddress: (address) => {
+      dispatch(getAddress(address));
+    }
     })
 }
 export default connect(mapStateToProp, mapDispatchToProp)(DownloadFile);

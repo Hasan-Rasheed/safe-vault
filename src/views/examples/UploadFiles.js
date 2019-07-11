@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames, getFileHash, getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone, getUserPrivateKey, isFileSelected, getAddress } from "../../store/actions/actions";
 import CreditCard from './CreditCardTransaction'
 import { Container, Row, Col } from 'react-grid-system';
 import axios from 'axios'
@@ -59,6 +59,12 @@ class UploadFiles extends Component {
     this.setState({ loading: false })
 
   }
+  componentWillReceiveProps(nextprops){
+    console.log(nextprops)
+    console.log(nextprops.payment)
+    // console.log("i am at CWRP")
+    this.transactionSuccessful(nextprops.payment)
+  }
 
   handleRequestClose = () => {
     this.setState({
@@ -90,21 +96,22 @@ class UploadFiles extends Component {
   }
 
 
-  async onUploadData(event) {
+   onUploadData(trans) {
     let that = this;
-    event.preventDefault();
-
+    // event.preventDefault();
+    console.log(this.state.privateKey, "password")
+    console.log(trans,"payment props")
     if (fileHash === '' ) {
       alert("Please select file to upload")
       return
     }
-    console.log(this.state.privateKey, "password")
-    if (this.state.privateKey === '') {
+    // console.log(this.state.privateKey, "password")
+    else if(this.state.privateKey === '') {
       alert("All the fields are required");
       return
     }
-    else if( that.state.payment==true){
-      await this.uploadFile()
+    else if( trans){
+       this.uploadFile()
     }
       
   }
@@ -184,6 +191,7 @@ class UploadFiles extends Component {
           console.log('Uploaded a Blob or File');
           that.setState({ currentStatus: "File Uploaded" })
           that.setState({ loading: false });
+          this.props.isPaymentDone(false)
 
           firebase.firestore().collection('userData').doc(this.state.uid).update({
             files: firebase.firestore.FieldValue.arrayUnion(fileName)
@@ -204,7 +212,8 @@ class UploadFiles extends Component {
         alert("Your Transaction has been cancelled");
         that.setState({ currentStatus: "" })
         this.setState({ loading: false });
-
+        this.props.isPaymentDone(false)
+        
 
         // console.log(error);
       });
@@ -281,6 +290,12 @@ class UploadFiles extends Component {
 
   }
 
+  transactionSuccessful(trans){
+    console.log("hello i am here")
+    this.onUploadData(trans)
+    // this.onSaveData()
+  }
+
 
 
   render() {
@@ -297,7 +312,7 @@ class UploadFiles extends Component {
           <Row>
 
             <Col lg={6} md={6} xsm={6} className="form-style">
-              <form className='add-product button-alignment' onSubmit={this.onUploadData.bind(this)}>
+              <div className='add-product button-alignment' >
                 <div className='form-group'>
                   <h1 className="heading" >Upload Files</h1>
                   <Input
@@ -325,11 +340,11 @@ class UploadFiles extends Component {
 
                 <br />
 
-              </form>
+              </div>
             </Col>
             {/* <br /> */}
             <Col lg={6} md={6} sm={6} className="form-style">
-              <form className='add-product button-alignment' onSubmit={this.onSaveData.bind(this)}>
+              <div className='add-product button-alignment'>
                 <div className="form-group ">
                   <h1 className="heading">Write Data</h1>
                   <input
@@ -370,7 +385,7 @@ class UploadFiles extends Component {
 
                   {/* <hr/> */}
                 </div>
-              </form>
+              </div>
 
             </Col>
           </Row>
@@ -420,6 +435,9 @@ function mapDispatchToProp(dispatch) {
     },
     userAddress: (address) => {
       dispatch(getAddress(address));
+    },
+    isPaymentDone: (transaction) => {
+      dispatch(isPaymentDone(transaction));
     }
 
   })
