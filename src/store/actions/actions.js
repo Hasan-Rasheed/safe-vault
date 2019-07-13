@@ -222,6 +222,34 @@ export function isWritePaymentDone(writepayment){
     }
     // console.log(payment)
 }
+
+export function isFileChosen(chosen){
+    console.log(chosen,"chosenfile")
+    return dispatch => {
+        dispatch({ type: 'IS_FILE_CHOSEN', payload: chosen })
+    }
+}
+export function isDataWritten(written){
+    console.log(written,"chosenfile")
+    return dispatch => {
+        dispatch({ type: 'IS_DATA_WRITTEN', payload: written })
+    }
+}
+
+export function isIndexWritten(indexwritten){
+    console.log(indexwritten,"chosenfile")
+    return dispatch => {
+        dispatch({ type: 'IS_INDEX_WRITTEN', payload: indexwritten })
+    }
+}
+
+
+// export function isFileSelected(selection){
+//     console.log(selection,"uiddddd")
+//     return dispatch => {
+//         dispatch({ type: 'IS_FILE_SELECTED', payload: selection })
+//     }
+// }
 export function checkIfHashExist(hash){
     firebase.database().ref('userData/'+firebase.auth().currentUser.uid+'/fileHash/'+hash).on('name').then(snapshot=>{
         if(snapshot.exists()){

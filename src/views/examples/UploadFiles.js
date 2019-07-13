@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone, getUserPrivateKey, isWritePaymentDone,isFileSelected, getAddress } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone,isIndexWritten, isDataWritten,getUserPrivateKey, isWritePaymentDone,isFileSelected, getAddress, isFileChosen } from "../../store/actions/actions";
 import CreditCard from './CreditCardTransaction'
 import CreditCardWrite from './CreditCardWrite'
 
@@ -47,11 +47,13 @@ class UploadFiles extends Component {
       payment: this.props.payment,
       currentWriteStatus:'',
       loading: '',
-      loadingWrite:''
+      loadingWrite:'',
+      FileChosen: false,
+      dataWritten: false
 
     }
 
-    this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
+    // this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
 
 
   }
@@ -65,14 +67,20 @@ class UploadFiles extends Component {
     console.log(nextprops)
     console.log(nextprops.payment)
     // console.log("i am at CWRP")
-    console.log(nextprops.writepayment)
-
-    if(nextprops.payment){
+    // console.log(nextprops.writepayment)
+    if(nextprops.payment && this.props.fileChosen && this.props.dataWritten){
+      console.log("both are working")
+      this.transactionSuccessful(nextprops.payment)
+      this.onSaveData(nextprops.payment)
+    }
+    else if(nextprops.payment && this.props.fileChosen && !this.props.dataWritten){
+      console.log("FIle uploading working")
     this.transactionSuccessful(nextprops.payment)
     }
-    else if(nextprops.writepayment){
-      console.log(nextprops.writepayment)
-      this.onSaveData(nextprops.writepayment)
+    else if(nextprops.payment && this.props.dataWritten && !this.props.fileChosen){
+      console.log("Data saving working")
+      // console.log(nextprops.writepayment)
+      this.onSaveData(nextprops.payment)
     }
   }
 
@@ -130,7 +138,7 @@ class UploadFiles extends Component {
   OnChangePrivateKey = (event) => {
 
     this.setState({ privateKey: event.target.value })
-    // this.props.userPrivateKey(event.target.value);
+    this.props.userPrivateKey(event.target.value);
   }
 
   uploadFile = async () => {
@@ -156,6 +164,8 @@ class UploadFiles extends Component {
   captureFile = (event) => {
     event.stopPropagation()
     event.preventDefault()
+    this.setState({FileChosen : true})
+    this.props.isFileChosen(true)
     const file = event.target.files[0]
     fileName = file.name;
     let reader = new window.FileReader()
@@ -202,6 +212,7 @@ class UploadFiles extends Component {
           that.setState({ currentStatus: "File Uploaded" })
           that.setState({ loading: false });
           this.props.isPaymentDone(false)
+          this.props.fileChosen(false)
 
           firebase.firestore().collection('userData').doc(this.state.uid).update({
             files: firebase.firestore.FieldValue.arrayUnion(fileName)
@@ -233,11 +244,14 @@ class UploadFiles extends Component {
   OnChangeData = (event) => {
 
     this.setState({ data: event.target.value })
+    this.props.isDataWritten(true)
   }
 
   OnChangeKey = (event) => {
 
     this.setState({ Keyindex: event.target.value })
+    this.props.isIndexWritten(true)
+
   }
 
 
@@ -259,6 +273,9 @@ class UploadFiles extends Component {
         return
       }
     else if(trans){
+      this.setState({dataWritten : true})
+      this.props.isDataWritten(true)
+      this.props.isIndexWritten(true)
         this.encryptData();
       }
       
@@ -287,8 +304,10 @@ class UploadFiles extends Component {
     axios.post(api_url + '/sendData', obj)
       .then(function (response) {
         that.setState({ currentWriteStatus: "Your Data has been saved" })
-        that.setState({ loadingWrite: false });
+        that.setState({ loadingWrite: false ,  Keyindex: "" , privateKey:"" , data:''});
         that.props.isWritePaymentDone(false)
+        that.props.isDataWritten(false)
+        that.props.isIndexWritten(false)
 
         console.log(response);
       })
@@ -322,52 +341,34 @@ class UploadFiles extends Component {
       <div className="form-styling ">
 
 
-        <Container>
-          <Row>
-
-            <Col lg={6} md={6} xsm={6} className="form-style">
+     
               <div className='add-product button-alignment' >
-                <div className='form-group'>
                   <h1 className="heading" >Upload Files</h1>
                   <Input
                     type='file'
                     ref='myFile'
                     multiple="multiple"
-                    // onChange={(e) => this.onFileChange(e)}
                     onChange={this.captureFile}
                     className='form-control' />
 
                   <br />
 
-                  <Input
+                  {/* <Input
                     type='password'
                     className='form-control'
                     onChange={this.OnChangePrivateKey}
                     placeholder='Enter Your Private Key to Encrypt the Data'
                   />
-                </div>
-
-                <CreditCard />
-                <br />
+               
+                <br /> */}
                 <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
-                {/* <span>{this.state.loading && <img src={loader} style={{ height: "3em" }} />}</span> */}
 
-                <br />
 
               </div>
-            </Col>
-            {/* <br /> */}
-            <Col lg={6} md={6} sm={6} className="form-style">
+            <br />
               <div className='add-product button-alignment'>
-                <div className="form-group ">
                   <h1 className="heading">Write Data</h1>
-                  <input
-                    type='password'
-                    className='form-control'
-                    onChange={this.OnChangePrivateKey.bind(this)}
-                    placeholder='Enter Your Private Key to Encrypt the Data'
-                  />
-                  <br />
+                 
                   <input
                     type='text'
                     className='form-control'
@@ -380,6 +381,14 @@ class UploadFiles extends Component {
                     onChange={this.OnChangeData.bind(this)}
                   />
                   <br />
+                  <input
+                    type='password'
+                    className='form-control'
+                    onChange={this.OnChangePrivateKey.bind(this)}
+                    placeholder='Enter Your Private Key to Encrypt the Data'
+                  />
+                                    <br />
+
                   {/* <button
                     className="button-styling"
                     // color="primary"
@@ -391,19 +400,19 @@ class UploadFiles extends Component {
                     {/* <CreditCard/> 
                     <span className="button-span"> Save</span>
                   </button> */}
-                                  <CreditCardWrite />
+                <CreditCard />
 
                   <br />
                 <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
                 {/* <span>{this.state.loadingWrite && <img src={loader} style={{ height: "3em" }} />}</span> */}
 
                   {/* <hr/> */}
-                </div>
+                {/* </div> */}
               </div>
 
-            </Col>
+            {/* </Col>
           </Row>
-        </Container>
+        </Container> */}
       </div>
 
     );
@@ -420,7 +429,9 @@ function mapStateToProp(state) {
     notification: state.root.notify,
     Address: state.root.address,
     payment: state.root.payment,
-    writepayment: state.root.writepayment
+    writepayment: state.root.writepayment,
+    dataWritten: state.root.datawritten,
+    fileChosen: state.root.filechosen
 
   })
 }
@@ -457,8 +468,16 @@ function mapDispatchToProp(dispatch) {
     },
     isWritePaymentDone: (transaction) => {
       dispatch(isWritePaymentDone(transaction));
+    },
+    isFileChosen: (chosen)=>{
+      dispatch(isFileChosen(chosen));
+    },
+    isDataWritten: (written)=>{
+      dispatch(isDataWritten(written));
+    },
+    isIndexWritten: (indexwritten)=>{
+      dispatch(isIndexWritten(indexwritten));
     }
-
   })
 }
 export default connect(mapStateToProp, mapDispatchToProp)(UploadFiles);

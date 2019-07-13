@@ -11,8 +11,11 @@ const INITIAL_STATE = {
     userprivatekey: [],
     notify: '',
     address: '',
-    writepayment:false,
-    payment:false
+    filechosen:false,
+    payment:false,
+    datawritten:false,
+    indexwritten:false
+
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -87,6 +90,29 @@ export default (state = INITIAL_STATE, action) => {
                 selection: action.payload
 
             })
+
+            case 'IS_FILE_CHOSEN':
+            return ({
+                ...state,
+                filechosen: action.payload
+
+            })
+
+            case 'IS_DATA_WRITTEN':
+            return ({
+                ...state,
+                datawritten: action.payload
+
+            })
+
+            case 'IS_INDEX_WRITTEN':
+                return ({
+                    ...state,
+                    indexwritten: action.payload
+    
+                })
+
+            
         case 'PAYMENT':
         { console.log(action.payload) }
         return ({
