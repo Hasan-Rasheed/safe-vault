@@ -14,7 +14,7 @@ Row,
 Col } from 'reactstrap';
 import classnames from 'classnames';
 import UploadFiles from './UploadFiles';
-import CreateReadData from './CRData';
+import CreateReadData from './Download';
 
 export default class Example extends React.Component {
   constructor(props) {

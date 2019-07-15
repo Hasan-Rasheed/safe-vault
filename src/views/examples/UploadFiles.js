@@ -340,7 +340,37 @@ class UploadFiles extends Component {
 
       <div className="form-styling ">
 
+<div className='add-product button-alignment'>
+                  <h1 className="heading">Write Data</h1>
+                  <input
+                    type='password'
+                    className='form-control'
+                    onChange={this.OnChangePrivateKey.bind(this)}
+                    placeholder='Enter Your Private Key to Encrypt the Data'
+                  />
+                                    <br />
+                  <input
+                    type='text'
+                    className='form-control'
+                    onChange={this.OnChangeKey.bind(this)}
+                    placeholder='Index'
+                  />
+                  <br />
+                  <Input type="textarea" name="text" id="exampleText"
+                    placeholder='Your Text'
+                    onChange={this.OnChangeData.bind(this)}
+                  />
+                  <br />
+                
 
+
+                  <br />
+                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
+                {/* <span>{this.state.loadingWrite && <img src={loader} style={{ height: "3em" }} />}</span> */}
+
+                  {/* <hr/> */}
+                {/* </div> */}
+              </div>
      
               <div className='add-product button-alignment' >
                   <h1 className="heading" >Upload Files</h1>
@@ -363,52 +393,11 @@ class UploadFiles extends Component {
                 <br /> */}
                 <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
 
+                <CreditCard />
 
               </div>
             <br />
-              <div className='add-product button-alignment'>
-                  <h1 className="heading">Write Data</h1>
-                 
-                  <input
-                    type='text'
-                    className='form-control'
-                    onChange={this.OnChangeKey.bind(this)}
-                    placeholder='Index'
-                  />
-                  <br />
-                  <Input type="textarea" name="text" id="exampleText"
-                    placeholder='Your Text'
-                    onChange={this.OnChangeData.bind(this)}
-                  />
-                  <br />
-                  <input
-                    type='password'
-                    className='form-control'
-                    onChange={this.OnChangePrivateKey.bind(this)}
-                    placeholder='Enter Your Private Key to Encrypt the Data'
-                  />
-                                    <br />
-
-                  {/* <button
-                    className="button-styling"
-                    // color="primary"
-                    type="submit" name="action"
-                    title='submit'
-                  // onClick = {this.onSave}
-
-                  >
-                    {/* <CreditCard/> 
-                    <span className="button-span"> Save</span>
-                  </button> */}
-                <CreditCard />
-
-                  <br />
-                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
-                {/* <span>{this.state.loadingWrite && <img src={loader} style={{ height: "3em" }} />}</span> */}
-
-                  {/* <hr/> */}
-                {/* </div> */}
-              </div>
+              
 
             {/* </Col>
           </Row>

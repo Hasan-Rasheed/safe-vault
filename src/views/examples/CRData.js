@@ -44,10 +44,11 @@ class CreateReadData extends React.Component {
     privateKey:'',
     Keyindex:'',
     data:'',
+    decryptedData: '',
+
     uid: this.props.currentUser,
 
     currentStatus: '',
-    decryptedData: '',
     fileList:[]
   }
 

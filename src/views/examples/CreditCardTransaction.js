@@ -64,7 +64,7 @@ class stripeBtn extends Component {
         return (
 
             <StripeCheckout
-                label="Upload" //Component button text
+                label="SAVE" //Component button text
                 name="Business LLC" //Modal Header
                 description="Upgrade to a premium account today."
                 panelLabel="Pay" //Submit button in modal
