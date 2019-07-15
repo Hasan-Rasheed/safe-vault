@@ -8,7 +8,7 @@ import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone
 import CreditCard from './CreditCardTransaction'
 import CreditCardWrite from './CreditCardWrite'
 
-import { Container, Row, Col } from 'react-grid-system';
+import { Container, Row, Col, Hidden } from 'react-grid-system';
 import axios from 'axios'
 import '../../assets/css/style.css';
 import { api_url } from '../../config/api'
@@ -49,11 +49,11 @@ class UploadFiles extends Component {
       loading: '',
       loadingWrite:'',
       FileChosen: false,
-      dataWritten: false
+      dataWritten: false,
+      indexWritten:false
 
     }
 
-    // this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
 
 
   }
@@ -63,6 +63,7 @@ class UploadFiles extends Component {
     this.setState({ loading: false })
 
   }
+  
   componentWillReceiveProps(nextprops){
     console.log(nextprops)
     console.log(nextprops.payment)
@@ -123,7 +124,6 @@ class UploadFiles extends Component {
       alert("Please select file to upload")
       return
     }
-    // console.log(this.state.privateKey, "password")
     else if(this.state.privateKey === '') {
       alert("All the fields are required");
       return
@@ -191,8 +191,7 @@ class UploadFiles extends Component {
     let that = this;
 
     console.log(fileHash)
-    // fileHash = JSON.stringify(fileHash);
-    // alert("Do you want to continue")
+
     let obj = {
       address: this.props.Address,
       data: fileHash
@@ -211,8 +210,8 @@ class UploadFiles extends Component {
           console.log('Uploaded a Blob or File');
           that.setState({ currentStatus: "File Uploaded" })
           that.setState({ loading: false });
-          this.props.isPaymentDone(false)
-          this.props.fileChosen(false)
+          that.props.isPaymentDone(false)
+          that.props.isFileChosen(false)
 
           firebase.firestore().collection('userData').doc(this.state.uid).update({
             files: firebase.firestore.FieldValue.arrayUnion(fileName)
@@ -232,8 +231,8 @@ class UploadFiles extends Component {
         that.setState({ loading: true });
         alert("Your Transaction has been cancelled");
         that.setState({ currentStatus: "" })
-        this.setState({ loading: false });
-        this.props.isPaymentDone(false)
+        that.setState({ loading: false });
+        that.props.isPaymentDone(false)
 
 
         // console.log(error);
@@ -241,16 +240,28 @@ class UploadFiles extends Component {
   };
 
 
-  OnChangeData = (event) => {
-
-    this.setState({ data: event.target.value })
+   OnChangeData(event) {
+    console.log(event.target.value.length)
+     this.setState({ data: event.target.value })
+    if(event.target.value.length == 0){
+    this.props.isDataWritten(false)
+  } 
+  else{
     this.props.isDataWritten(true)
-  }
 
-  OnChangeKey = (event) => {
+  }
+}
+
+   OnChangeKey(event) {
 
     this.setState({ Keyindex: event.target.value })
-    this.props.isIndexWritten(true)
+    if(event.target.value.length == 0){
+      this.props.isIndexWritten(false)
+    } 
+    else{
+      this.props.isIndexWritten(true)
+  
+    }
 
   }
 
@@ -274,8 +285,8 @@ class UploadFiles extends Component {
       }
     else if(trans){
       this.setState({dataWritten : true})
-      this.props.isDataWritten(true)
-      this.props.isIndexWritten(true)
+      // this.props.isDataWritten(true)
+      // this.props.isIndexWritten(true)
         this.encryptData();
       }
       
@@ -305,7 +316,7 @@ class UploadFiles extends Component {
       .then(function (response) {
         that.setState({ currentWriteStatus: "Your Data has been saved" })
         that.setState({ loadingWrite: false ,  Keyindex: "" , privateKey:"" , data:''});
-        that.props.isWritePaymentDone(false)
+        that.props.isPaymentDone(false)
         that.props.isDataWritten(false)
         that.props.isIndexWritten(false)
 
@@ -315,7 +326,7 @@ class UploadFiles extends Component {
         alert("Your Transaction has been cancelled");
         that.setState({ currentStatus: "" })
         that.setState({ loadingWrite: false });
-        that.props.isWritePaymentDone(false)
+        that.props.isPaymentDone(false)
 
 
         console.log(error);
@@ -340,37 +351,7 @@ class UploadFiles extends Component {
 
       <div className="form-styling ">
 
-<div className='add-product button-alignment'>
-                  <h1 className="heading">Write Data</h1>
-                  <input
-                    type='password'
-                    className='form-control'
-                    onChange={this.OnChangePrivateKey.bind(this)}
-                    placeholder='Enter Your Private Key to Encrypt the Data'
-                  />
-                                    <br />
-                  <input
-                    type='text'
-                    className='form-control'
-                    onChange={this.OnChangeKey.bind(this)}
-                    placeholder='Index'
-                  />
-                  <br />
-                  <Input type="textarea" name="text" id="exampleText"
-                    placeholder='Your Text'
-                    onChange={this.OnChangeData.bind(this)}
-                  />
-                  <br />
-                
 
-
-                  <br />
-                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
-                {/* <span>{this.state.loadingWrite && <img src={loader} style={{ height: "3em" }} />}</span> */}
-
-                  {/* <hr/> */}
-                {/* </div> */}
-              </div>
      
               <div className='add-product button-alignment' >
                   <h1 className="heading" >Upload Files</h1>
@@ -383,25 +364,44 @@ class UploadFiles extends Component {
 
                   <br />
 
-                  {/* <Input
-                    type='password'
-                    className='form-control'
-                    onChange={this.OnChangePrivateKey}
-                    placeholder='Enter Your Private Key to Encrypt the Data'
-                  />
-               
-                <br /> */}
+                 
                 <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
 
-                <CreditCard />
 
               </div>
             <br />
-              
+              <div className='add-product button-alignment'>
+                  <h1 className="heading">Write Data</h1>
+                 
+                  <input
+                    type='text'
+                    className='form-control'
+                    onChange={this.OnChangeKey.bind(this)}
+                    placeholder='Index'
+                  />
+                  <br />
+                  <Input type="textarea" name="text" id="exampleText"
+                    placeholder='Your Text'
+                    onChange={this.OnChangeData.bind(this)}
+                  />
+                  <br />
+                  <input
+                    type='password'
+                    className='form-control'
+                    onChange={this.OnChangePrivateKey.bind(this)}
+                    placeholder='Enter Your Private Key to Encrypt the Data'
+                  />
+                                    <br />
 
-            {/* </Col>
-          </Row>
-        </Container> */}
+               <CreditCard />
+                 
+
+                  <br />
+                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
+              
+              </div>
+
+         
       </div>
 
     );
@@ -418,7 +418,7 @@ function mapStateToProp(state) {
     notification: state.root.notify,
     Address: state.root.address,
     payment: state.root.payment,
-    writepayment: state.root.writepayment,
+    // writepayment: state.root.writepayment,
     dataWritten: state.root.datawritten,
     fileChosen: state.root.filechosen
 
@@ -454,9 +454,6 @@ function mapDispatchToProp(dispatch) {
     },
     isPaymentDone: (transaction) => {
       dispatch(isPaymentDone(transaction));
-    },
-    isWritePaymentDone: (transaction) => {
-      dispatch(isWritePaymentDone(transaction));
     },
     isFileChosen: (chosen)=>{
       dispatch(isFileChosen(chosen));

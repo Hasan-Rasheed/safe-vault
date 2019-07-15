@@ -17,10 +17,14 @@ class stripeBtn extends Component {
             token: token,
 
         };
-        alert("IS everything working fine")
         console.log(this.props.fileChosen)
         console.log(this.props.dataWritten)
-        if (!this.props.fileChosen && !this.props.dataWritten) {
+         if (this.props.userPrivateKey == "") {
+            console.log("IN CREDIT CARD FILE")
+            alert("please enter private key")
+            return
+        }
+       else if (!this.props.fileChosen && !this.props.dataWritten) {
             console.log()
             alert("CHOOSE THE FILE Or Write the Data")
             return
@@ -31,10 +35,7 @@ class stripeBtn extends Component {
                 return
             }
         }
-        else if (this.props.userPrivateKey == "") {
-            alert("please enter private key")
-            return
-        }
+      
 
         if (this.props.dataWritten) {
             if (!this.props.indexWritten) {
@@ -73,6 +74,7 @@ class stripeBtn extends Component {
                 stripeKey={publishableKey}
                 // image="https://www.vidhub.co" //Pop-in header image
                 billingAddress={false}
+
             />
 
         );

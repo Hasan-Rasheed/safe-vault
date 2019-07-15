@@ -237,7 +237,7 @@ export function isDataWritten(written){
 }
 
 export function isIndexWritten(indexwritten){
-    console.log(indexwritten,"chosenfile")
+    console.log(indexwritten,"indexwritten")
     return dispatch => {
         dispatch({ type: 'IS_INDEX_WRITTEN', payload: indexwritten })
     }
