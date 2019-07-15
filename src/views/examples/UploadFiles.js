@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames, getFileHash,isPaymentDone,isIndexWritten, isDataWritten,getUserPrivateKey, isWritePaymentDone,isFileSelected, getAddress, isFileChosen } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames, getFileHash, isPaymentDone, isIndexWritten, isDataWritten, getUserPrivateKey, isWritePaymentDone, isFileSelected, getAddress, isFileChosen } from "../../store/actions/actions";
 import CreditCard from './CreditCardTransaction'
 import CreditCardWrite from './CreditCardWrite'
 
@@ -45,12 +45,12 @@ class UploadFiles extends Component {
       data: '',
       flag: false,
       payment: this.props.payment,
-      currentWriteStatus:'',
+      currentWriteStatus: '',
       loading: '',
-      loadingWrite:'',
+      loadingWrite: '',
       FileChosen: false,
       dataWritten: false,
-      indexWritten:false
+      indexWritten: false
 
     }
 
@@ -63,22 +63,22 @@ class UploadFiles extends Component {
     this.setState({ loading: false })
 
   }
-  
-  componentWillReceiveProps(nextprops){
+
+  componentWillReceiveProps(nextprops) {
     console.log(nextprops)
     console.log(nextprops.payment)
     // console.log("i am at CWRP")
     // console.log(nextprops.writepayment)
-    if(nextprops.payment && this.props.fileChosen && this.props.dataWritten){
+    if (nextprops.payment && this.props.fileChosen && this.props.dataWritten) {
       console.log("both are working")
       this.transactionSuccessful(nextprops.payment)
       this.onSaveData(nextprops.payment)
     }
-    else if(nextprops.payment && this.props.fileChosen && !this.props.dataWritten){
+    else if (nextprops.payment && this.props.fileChosen && !this.props.dataWritten) {
       console.log("FIle uploading working")
-    this.transactionSuccessful(nextprops.payment)
+      this.transactionSuccessful(nextprops.payment)
     }
-    else if(nextprops.payment && this.props.dataWritten && !this.props.fileChosen){
+    else if (nextprops.payment && this.props.dataWritten && !this.props.fileChosen) {
       console.log("Data saving working")
       // console.log(nextprops.writepayment)
       this.onSaveData(nextprops.payment)
@@ -115,25 +115,25 @@ class UploadFiles extends Component {
   }
 
 
-   onUploadData(trans) {
+  onUploadData(trans) {
     let that = this;
     // event.preventDefault();
     console.log(this.state.privateKey, "password")
-    console.log(trans,"payment props")
-    if (fileHash === '' ) {
+    console.log(trans, "payment props")
+    if (fileHash === '') {
       alert("Please select file to upload")
       return
     }
-    else if(this.state.privateKey === '') {
+    else if (this.state.privateKey === '') {
       alert("All the fields are required");
       return
     }
-    else if( trans){
-       this.uploadFile()
+    else if (trans) {
+      this.uploadFile()
     }
-      
+
   }
-  
+
 
   OnChangePrivateKey = (event) => {
 
@@ -164,7 +164,7 @@ class UploadFiles extends Component {
   captureFile = (event) => {
     event.stopPropagation()
     event.preventDefault()
-    this.setState({FileChosen : true})
+    this.setState({ FileChosen: true })
     this.props.isFileChosen(true)
     const file = event.target.files[0]
     fileName = file.name;
@@ -201,10 +201,10 @@ class UploadFiles extends Component {
 
     // let that = this;
     await axios.post(api_url + '/sendHash', obj)
-    
+
       .then(response => {
         alert("Your Transaction has been done ");
-        
+
         var storageRef = firebase.storage().ref(uid)
         storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
           console.log('Uploaded a Blob or File');
@@ -221,10 +221,10 @@ class UploadFiles extends Component {
         }).catch(errr => {
           alert("Something went wrong with the firebase please try again")
 
-          that.setState({privateKey:""})
+          that.setState({ privateKey: "" })
           console.log("data storage error " + errr)
         })
-        
+
       })
       .catch(error => {
         that.setState({ currentStatus: "Waiting for the Response of Transaction" })
@@ -240,27 +240,27 @@ class UploadFiles extends Component {
   };
 
 
-   OnChangeData(event) {
+  OnChangeData(event) {
     console.log(event.target.value.length)
-     this.setState({ data: event.target.value })
-    if(event.target.value.length == 0){
-    this.props.isDataWritten(false)
-  } 
-  else{
-    this.props.isDataWritten(true)
+    this.setState({ data: event.target.value })
+    if (event.target.value.length == 0) {
+      this.props.isDataWritten(false)
+    }
+    else {
+      this.props.isDataWritten(true)
 
+    }
   }
-}
 
-   OnChangeKey(event) {
+  OnChangeKey(event) {
 
     this.setState({ Keyindex: event.target.value })
-    if(event.target.value.length == 0){
+    if (event.target.value.length == 0) {
       this.props.isIndexWritten(false)
-    } 
-    else{
+    }
+    else {
       this.props.isIndexWritten(true)
-  
+
     }
 
   }
@@ -279,19 +279,19 @@ class UploadFiles extends Component {
       alert("Enter you Index Key");
       return
     }
-    else if(this.state.data===''){
-        alert("Please Enter you Text")
-        return
-      }
-    else if(trans){
-      this.setState({dataWritten : true})
+    else if (this.state.data === '') {
+      alert("Please Enter you Text")
+      return
+    }
+    else if (trans) {
+      this.setState({ dataWritten: true })
       // this.props.isDataWritten(true)
       // this.props.isIndexWritten(true)
-        this.encryptData();
-      }
-      
+      this.encryptData();
     }
-  
+
+  }
+
 
   encryptData = () => {
     this.setState({ currentWriteStatus: "Encrypting..." })
@@ -315,7 +315,7 @@ class UploadFiles extends Component {
     axios.post(api_url + '/sendData', obj)
       .then(function (response) {
         that.setState({ currentWriteStatus: "Your Data has been saved" })
-        that.setState({ loadingWrite: false ,  Keyindex: "" , privateKey:"" , data:''});
+        that.setState({ loadingWrite: false, Keyindex: "", privateKey: "", data: '' });
         that.props.isPaymentDone(false)
         that.props.isDataWritten(false)
         that.props.isIndexWritten(false)
@@ -334,7 +334,7 @@ class UploadFiles extends Component {
 
   }
 
-  transactionSuccessful(trans){
+  transactionSuccessful(trans) {
     console.log("hello i am here")
     this.onUploadData(trans)
     // this.onSaveData()
@@ -352,56 +352,55 @@ class UploadFiles extends Component {
       <div className="form-styling ">
 
 
-     
-              <div className='add-product button-alignment' >
-                  <h1 className="heading" >Upload Files</h1>
-                  <Input
-                    type='file'
-                    ref='myFile'
-                    multiple="multiple"
-                    onChange={this.captureFile}
-                    className='form-control' />
 
-                  <br />
+        <div className='add-product button-alignment' >
+          
+          {/* <div className='add-product button-alignment'> */}
+          <h1 className="heading">Write Data</h1>
+          <br/>
+          <input
+            type='password'
+            className='form-control'
+            onChange={this.OnChangePrivateKey.bind(this)}
+            placeholder='Enter Your Private Key to Encrypt the Data'
+          />
+          <br />
+          <input
+            type='text'
+            className='form-control'
+            onChange={this.OnChangeKey.bind(this)}
+            placeholder='Index'
+          />
+          <br />
+          <Input type="textarea" name="text" id="exampleText"
+            placeholder='Your Text'
+            onChange={this.OnChangeData.bind(this)}
+          />
+          <br />
 
-                 
-                <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
+          <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
+          <br />
+
+          <h1 className="heading" >Upload Files</h1>
+
+          <br />
+          <Input
+            type='file'
+            ref='myFile'
+            multiple="multiple"
+            onChange={this.captureFile}
+            className='form-control' />
+            <br/>
+
+          <CreditCard />
 
 
-              </div>
-            <br />
-              <div className='add-product button-alignment'>
-                  <h1 className="heading">Write Data</h1>
-                 
-                  <input
-                    type='text'
-                    className='form-control'
-                    onChange={this.OnChangeKey.bind(this)}
-                    placeholder='Index'
-                  />
-                  <br />
-                  <Input type="textarea" name="text" id="exampleText"
-                    placeholder='Your Text'
-                    onChange={this.OnChangeData.bind(this)}
-                  />
-                  <br />
-                  <input
-                    type='password'
-                    className='form-control'
-                    onChange={this.OnChangePrivateKey.bind(this)}
-                    placeholder='Enter Your Private Key to Encrypt the Data'
-                  />
-                                    <br />
+          <br />
+          <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
+<br/>
+        </div>
 
-               <CreditCard />
-                 
 
-                  <br />
-                <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
-              
-              </div>
-
-         
       </div>
 
     );
@@ -455,13 +454,13 @@ function mapDispatchToProp(dispatch) {
     isPaymentDone: (transaction) => {
       dispatch(isPaymentDone(transaction));
     },
-    isFileChosen: (chosen)=>{
+    isFileChosen: (chosen) => {
       dispatch(isFileChosen(chosen));
     },
-    isDataWritten: (written)=>{
+    isDataWritten: (written) => {
       dispatch(isDataWritten(written));
     },
-    isIndexWritten: (indexwritten)=>{
+    isIndexWritten: (indexwritten) => {
       dispatch(isIndexWritten(indexwritten));
     }
   })
