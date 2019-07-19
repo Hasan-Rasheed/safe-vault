@@ -377,8 +377,8 @@ class UploadFiles extends Component {
             onChange={this.OnChangeData.bind(this)}
           />
           <br />
+          <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
 
-          <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
           <br />
 
           <h1 className="heading" >Upload Files</h1>
@@ -396,7 +396,8 @@ class UploadFiles extends Component {
 
 
           <br />
-          <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
+          <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
+
 <br/>
         </div>
 

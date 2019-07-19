@@ -18,15 +18,14 @@ import AdminLayout from "layouts/Admin";
 import AuthLayout from "layouts/Auth";
 
 {/* <script src="https://js.stripe.com/v3/"></script> */}
-
 var firebaseConfig = {
-  apiKey: "AIzaSyCLe2yPQlJzZMR9I4ZuungBUAe3FIhOwZk",
-  authDomain: "safe-vault-6c217.firebaseapp.com",
-  databaseURL: "https://safe-vault-6c217.firebaseio.com",
-  projectId: "safe-vault-6c217",
-  storageBucket: "safe-vault-6c217.appspot.com",
-  messagingSenderId: "104556643375",
-  appId: "1:104556643375:web:03106e8c506c0ff3"
+  apiKey: "AIzaSyBkaxatZYWY4lcTOWMmizKVzQCxhNu6j4k",
+  authDomain: "safevault-4bfe4.firebaseapp.com",
+  databaseURL: "https://safevault-4bfe4.firebaseio.com",
+  projectId: "safevault-4bfe4",
+  storageBucket: "safevault-4bfe4.appspot.com",
+  messagingSenderId: "669650035676",
+  appId: "1:669650035676:web:6463c5194117814c"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
