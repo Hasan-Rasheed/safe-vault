@@ -45,7 +45,7 @@ class stripeBtn extends Component {
         }
 
         console.log(body)
-        axios.post("http://35.229.110.230:8000/", body)
+        axios.post("http://localhost:8000/", body)
             .then(response => {
                 console.log(response, "response");
 
@@ -58,6 +58,7 @@ class stripeBtn extends Component {
 
                 console.log("Payment Error: ", error);
                 alert("Payment Error");
+                
 
             });
     };

@@ -104,7 +104,7 @@ class Register extends Component {
           this.setState({ userName: "", email: "", password: "" })
 
           console.log('error', err.message);
-          this.setState({ registerError: 'The email address is already in use by another account.' })
+          this.setState({ registerError: 'The email address is already in use by another account.'  , loading: false})
         })
     }
   }
