@@ -45,7 +45,7 @@ class stripeBtn extends Component {
         }
 
         console.log(body)
-        axios.post("http://34.74.237.53:8000/", body)
+        axios.post("http://localhost:8000/", body)
             .then(response => {
                 console.log(response, "response");
 

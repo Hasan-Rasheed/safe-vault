@@ -89,7 +89,7 @@ class UploadFiles extends Component {
     // console.log("i am at CWRP")
     // console.log(nextprops.writepayment)
     if (nextprops.payment && this.props.fileChosen && this.props.dataWritten) {
-      // alert("both are working")
+      alert("both are working")
 
     this.setState({BothExist: true})
 
@@ -101,11 +101,11 @@ class UploadFiles extends Component {
       // this.onSavingBothDataAndFile(nextprops.payment)
     }
     else if (nextprops.payment && this.props.fileChosen && !this.props.dataWritten) {
-      // alert("FIle uploading working")
+      alert("FIle uploading working")
       this.transactionSuccessful(nextprops.payment ,  this.state.BothExist)
     }
     else if (nextprops.payment && this.props.dataWritten && !this.props.fileChosen) {
-      // alert("Data saving working")
+      alert("Data saving working")
       // console.log(nextprops.writepayment)
       this.onSaveData(nextprops.payment , this.state.BothExist)
     }

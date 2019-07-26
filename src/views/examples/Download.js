@@ -63,7 +63,8 @@ class DownloadFile extends Component {
       Keyindex: '',
       data: '',
       decryptedData: '',
-      fileSelected: false
+      fileSelected: false,
+      active: ''
 
     }
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -210,6 +211,10 @@ class DownloadFile extends Component {
       console.log(this.state.checkExist, "existing")
       this.onDownloadFile(event);
     }
+    else{
+      this.setState({currentStatus: "File Hash not exist in the BlockChain", loading:false})
+      return
+    }
   }
 
 
@@ -224,6 +229,8 @@ class DownloadFile extends Component {
       this.setState({ fileUrl: url })
     }).catch(err => {
       console.log(err, "url error")
+      this.setState({currentStatus:'Error! please try again' , active: null , fileSelected: false})
+      return
     })
 
     this.setState({ currentStatus: "Downloading file. Please wait.." })
@@ -277,20 +284,26 @@ class DownloadFile extends Component {
   }
 
   handleLabelClick(filename) {
-
+console.log(this.state.active)
     if (this.state.active === filename) {
+      console.log("File unselected")
       this.setState({ active: null })
+    this.setState({ fileSelected: false })
+      
 
     } else {
+      console.log("File selected")
+
       this.setState({ active: filename })
-
+      this.setState({ fileSelected: true })
+    
     }
-    this.setState({ fileSelected: true })
-
     console.log(filename)
     let file_Hash = sha256(utf8.encode(filename));
     console.log(file_Hash)
     this.props.getFileHash(file_Hash);
+
+   
 
 
     // <Download/>
@@ -300,7 +313,9 @@ class DownloadFile extends Component {
     if (this.state.active === filename) {
       return "#b2b2e0";
     }
+
     return "";
+    
   }
   fileExtension = (file) => {
     let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
@@ -348,14 +363,20 @@ class DownloadFile extends Component {
   }
 
   decryptData = (encryptedData) => {
+    if(encryptedData == ''){
     this.setState({ currentDataStatus: "Decrypting Data " })
 
     var decrypted = CryptoJS.AES.decrypt(encryptedData, this.state.privateKey).toString(CryptoJS.enc.Latin1);
     this.setState({ decryptedData: decrypted })
     console.log(decrypted, "decrypted data")
-    this.setState({ currentDataStatus: "" ,  loadingData: false })
+    this.setState({ currentDataStatus: "" ,  loadingData: false , Keyindex: '' })
 
   }
+  else{ 
+    this.setState({currentDataStatus: 'Ivalid Index' , loadingData: false})
+
+  }
+}
 
 
 

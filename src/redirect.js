@@ -27,7 +27,7 @@ class Redirecting extends Component{
 }
 }
 function mapStateToProp(state) {
-    console.log(state);
+    console.log(state);z
     return ({
       isLogin: state.root.isLogin,
       errorMsg: state.root.errorMessage,
