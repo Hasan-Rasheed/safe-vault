@@ -4,7 +4,7 @@ import 'firebase/storage';
 import CryptoJS from 'crypto-js';
 import sha256 from 'sha256';
 import { connect } from 'react-redux';
-import { getCurrentUserId, errorMessage, getFileNames, getFileHash, isPaymentDone, isIndexWritten, isDataWritten, getUserPrivateKey, isWritePaymentDone, isFileSelected, getAddress, isFileChosen } from "../../store/actions/actions";
+import { getCurrentUserId, errorMessage, getFileNames, getFileHash, isPaymentDone, loadingTransaction, isIndexWritten, isDataWritten, isWritePaymentDone, isFileSelected, getAddress, isFileChosen, getUserPrivateKey } from "../../store/actions/actions";
 import CreditCard from './CreditCardTransaction'
 import CreditCardWrite from './CreditCardWrite'
 import {
@@ -38,7 +38,7 @@ var iterations = 100;
 var fileName = ''
 var fileContent = ''
 var encrypted = ''
-var object ;
+var object2;
 
 class UploadFiles extends Component {
 
@@ -66,7 +66,9 @@ class UploadFiles extends Component {
       dataWritten: false,
       indexWritten: false,
       fileKey: '',
-      BothExist: false
+      BothExist: false,
+      address: ''
+
 
     }
 
@@ -84,103 +86,120 @@ class UploadFiles extends Component {
   }
 
   componentWillReceiveProps(nextprops) {
+    let that = this;
+    let db = firebase.firestore()
+    console.log(this.state.uid)
+    db.collection('userData').doc(this.state.uid).get().then(function (doc) {
+      if (doc.exists) {
+        that.setState({ address: doc.data().address })
+        console.log("address:", doc.data().address);
+
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    }).catch(function (error) {
+      console.log("Error getting document:", error);
+    });
+
+
     console.log(nextprops)
     console.log(nextprops.payment)
     // console.log("i am at CWRP")
     // console.log(nextprops.writepayment)
     if (nextprops.payment && this.props.fileChosen && this.props.dataWritten) {
-      alert("both are working")
+      console.log("both are working")
 
-    this.setState({BothExist: true})
+      this.setState({ BothExist: true })
 
-    // alert("Do you want to upload both ")
-    console.log(this.state.BothExist , "Both exist")
-    this.setState({payment: nextprops.payment})
-    this.transactionSuccessful(nextprops.payment , true)
+      // alert("Do you want to upload both ")
+      console.log(this.state.BothExist, "Both exist")
+      this.setState({ payment: nextprops.payment })
+      this.transactionSuccessful(nextprops.payment, true)
       //  this.onSaveData(nextprops.payment)
       // this.onSavingBothDataAndFile(nextprops.payment)
     }
     else if (nextprops.payment && this.props.fileChosen && !this.props.dataWritten) {
-      alert("FIle uploading working")
-      this.transactionSuccessful(nextprops.payment ,  this.state.BothExist)
+      console.log("FIle uploading working")
+      this.transactionSuccessful(nextprops.payment, this.state.BothExist)
     }
     else if (nextprops.payment && this.props.dataWritten && !this.props.fileChosen) {
-      alert("Data saving working")
+      console.log("Data saving working")
       // console.log(nextprops.writepayment)
-      this.onSaveData(nextprops.payment , this.state.BothExist)
+      this.onSaveData(nextprops.payment, this.state.BothExist)
     }
   }
-onSaveDataAndFile(obj){
-  let file = this.state.buffer;
-  let that = this;
-  let uid = this.props.currentUser;
+  onSaveDataAndFile(obj) {
+    let file = this.state.buffer;
+    let that = this;
+    let uid = this.props.currentUser;
 
-        console.log(obj, "data object")
-        console.log(object , "file object")
+    console.log(obj, "data object")
+    console.log(object2, "file object")
 
-        delete object.address;
-        let obj2= {...object , ...obj }
-        // obj2.push(obj)
-        console.log(obj2)
+    delete object2.address;
+    let obj2 = { ...object2, ...obj }
+    // obj2.push(obj)
+    console.log(obj2)
 
 
-        axios.post(api_url + '/sendDataAndHash', obj2)
+    axios.post(api_url + '/sendDataAndHash', obj2)
 
       .then(response => {
         console.log(response)
         alert("Your Transaction has been done ");
 
         var storageRef = firebase.storage().ref(uid)
-        var db=firebase.firestore()
+        var db = firebase.firestore()
         storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
           console.log('Uploaded a Blob or File');
-          that.setState({ currentStatus: "File Uploaded" , privateKey: '' ,fileKey: Date.now() })
+          that.setState({ currentStatus: "File Uploaded", privateKey: '', fileKey: Date.now() })
           console.log(this.state.uid)
           console.log(fileName)
           db.collection("userData").doc(this.state.uid).update({
             // {console.log()}
             files: firebase.firestore.FieldValue.arrayUnion(fileName)
-            
-          }).then(function() {
+
+          }).then(function () {
             console.log("Document successfully updated!");
-        })
-        .catch(function(error) {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
-        that.setState({ loading: false   });
-        // that.props.isPaymentDone(false)
-        that.props.isFileChosen(false)
           })
+            .catch(function (error) {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+            });
+          that.setState({ loading: false });
+          // that.props.isPaymentDone(false)
+          that.props.isFileChosen(false)
+        })
 
-          that.setState({ loadingWrite: false  })
+        that.setState({ loadingWrite: false })
 
-        that.setState({ currentWriteStatus: "Your Data has been saved" , privateKey:'' , Keyindex: '' , data:'' })
+        that.setState({ currentWriteStatus: "Your Data has been saved", privateKey: '', Keyindex: '', data: '' })
         that.props.isPaymentDone(false)
         that.props.isDataWritten(false)
         that.props.isIndexWritten(false)
-        
+
         console.log(response);
-          // that.setState({fileList : fileName});
-        }).catch(errr => {
-          alert("Something went wrong with the firebase please try again")
+        // that.setState({fileList : fileName});
+      }).catch(errr => {
+        alert("Something went wrong with the firebase please try again")
 
-          that.setState({  loading: false, currentStatus: "" })
-          that.props.isPaymentDone(false)
-          that.props.isFileChosen(false)
-          console.log("data storage error " + errr)
-        })
+        that.setState({ loading: false, currentStatus: "" })
+        that.props.isPaymentDone(false)
+        that.props.isFileChosen(false)
+        console.log("data storage error " + errr)
+      })
 
 
 
-        
+
       .catch(error => {
         that.setState({ currentStatus: "Waiting for the Response of Transaction" })
         that.setState({ loading: true });
         alert("Your Transaction has been cancelled");
-        
+
         that.setState({ currentStatus: "" })
-        that.setState({ loading: false  });
+        that.setState({ loading: false });
         that.props.isPaymentDone(false)
         that.props.isFileChosen(false)
 
@@ -189,18 +208,18 @@ onSaveDataAndFile(obj){
       });
 
 
-}
+  }
   handleRequestClose = () => {
     this.setState({
       open: false,
     });
   };
 
-  onSavingBothDataAndFile(obj){
+  onSavingBothDataAndFile(obj) {
     console.log(obj)
-    object = obj
-console.log(this.state.payment)
-this.onSaveData(this.state.payment , this.state.BothExist)
+    object2 = obj
+    console.log(this.state.payment)
+    this.onSaveData(this.state.payment, this.state.BothExist)
 
   }
 
@@ -227,7 +246,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
   }
 
 
-  onUploadData(trans , BothExist) {
+  onUploadData(trans, BothExist) {
     let that = this;
     // event.preventDefault();
     console.log(this.state.privateKey, "password")
@@ -240,7 +259,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
       alert("All the fields are required");
       return
     }
-    else if (trans ) {
+    else if (trans) {
       this.uploadFile(BothExist)
     }
 
@@ -248,9 +267,8 @@ this.onSaveData(this.state.payment , this.state.BothExist)
 
 
   OnChangePrivateKey = (event) => {
-
-    this.setState({ privateKey: event.target.value  ,  currentWriteStatus: ""})
-    this.props.userPrivateKey(event.target.value);
+    this.props.getUserPrivateKey(event.target.value)
+    this.setState({ privateKey: event.target.value, currentWriteStatus: "" })
   }
 
   uploadFile = async (BothExist) => {
@@ -264,7 +282,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
     let eReader = new FileReader()
     eReader.readAsArrayBuffer(eFile)
     eReader.onloadend = (e) => {
-      this.convertToBuffer(eReader , BothExist)
+      this.convertToBuffer(eReader, BothExist)
     }
 
     console.log(fileName, "setting file name")
@@ -291,11 +309,11 @@ this.onSaveData(this.state.payment , this.state.BothExist)
       this.setState({ HashStateMessage: fileHash })
 
     }
-   
+
 
   };
 
-  convertToBuffer = async (reader , BothExist) => {
+  convertToBuffer = async (reader, BothExist) => {
     let uid = this.props.currentUser;
     console.log(uid);
     const buffer = await Buffer.from(reader.result);
@@ -306,79 +324,79 @@ this.onSaveData(this.state.payment , this.state.BothExist)
     console.log(fileHash)
 
     let obj = {
-      address: this.props.Address,
+      address: this.state.address,
       hash: fileHash
     }
 
     console.log(obj)
 
     // let that = this;
-    if(BothExist){
-  
-        this.onSavingBothDataAndFile(obj)
+    if (BothExist) {
+
+      this.onSavingBothDataAndFile(obj)
     }
-    else{
-    await axios.post(api_url + '/sendHash', obj)
+    else {
+      await axios.post(api_url + '/sendHash', obj)
 
-      .then(response => {
-        console.log(response)
-        alert("Your Transaction has been done ");
+        .then(response => {
+          console.log(response)
+          alert("Your Transaction has been done ");
 
-        var storageRef = firebase.storage().ref(uid)
-        var db=firebase.firestore()
-        storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
-          console.log('Uploaded a Blob or File');
-          that.setState({ currentStatus: "File Uploaded" , privateKey: '' ,fileKey: Date.now() })
-          console.log(this.state.uid)
-          console.log(fileName)
-          db.collection("userData").doc(this.state.uid).update({
-            // {console.log()}
-            files: firebase.firestore.FieldValue.arrayUnion(fileName)
-            
-          }).then(function() {
-            console.log("Document successfully updated!");
-        })
-        .catch(function(error) {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
-        that.setState({ loading: false   });
-        that.props.isPaymentDone(false)
-        that.props.isFileChosen(false)
+          var storageRef = firebase.storage().ref(uid)
+          var db = firebase.firestore()
+          storageRef.child(this.state.HashStateMessage).put(file).then((snapshot) => {
+            console.log('Uploaded a Blob or File');
+            that.setState({ currentStatus: "File Uploaded", privateKey: '', fileKey: Date.now() })
+            console.log(this.state.uid)
+            console.log(fileName)
+            db.collection("userData").doc(this.state.uid).update({
+              // {console.log()}
+              files: firebase.firestore.FieldValue.arrayUnion(fileName)
+
+            }).then(function () {
+              console.log("Document successfully updated!");
+            })
+              .catch(function (error) {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+            that.setState({ loading: false });
+            that.props.isPaymentDone(false)
+            that.props.isFileChosen(false)
           })
 
-         
+
           // that.setState({fileList : fileName});
         }).catch(errr => {
           alert("Something went wrong with the firebase please try again")
 
-          that.setState({  loading: false, currentStatus: "" })
+          that.setState({ loading: false, currentStatus: "" })
           that.props.isPaymentDone(false)
           that.props.isFileChosen(false)
           console.log("data storage error " + errr)
         })
 
-        
-      .catch(error => {
-        that.setState({ currentStatus: "Waiting for the Response of Transaction" })
-        that.setState({ loading: true });
-        alert("Your Transaction has been cancelled");
-        
-        that.setState({ currentStatus: "" })
-        that.setState({ loading: false  });
-        that.props.isPaymentDone(false)
-        that.props.isFileChosen(false)
+
+        .catch(error => {
+          that.setState({ currentStatus: "Waiting for the Response of Transaction" })
+          that.setState({ loading: true });
+          alert("Your Transaction has been cancelled");
+
+          that.setState({ currentStatus: "" })
+          that.setState({ loading: false });
+          that.props.isPaymentDone(false)
+          that.props.isFileChosen(false)
 
 
-        // console.log(error);
-      });
+          // console.log(error);
+        });
     }
   };
 
 
   OnChangeData(event) {
     console.log(event.target.value.length)
-    this.setState({ data: event.target.value ,  currentWriteStatus: ""})
+    this.setState({ data: event.target.value, currentWriteStatus: "" })
     if (event.target.value.length == 0) {
       this.props.isDataWritten(false)
     }
@@ -390,7 +408,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
 
   OnChangeKey(event) {
     // this.setState({ currentWriteStatus: "Encrypting..." })
-    this.setState({ Keyindex: event.target.value , currentWriteStatus: ""})
+    this.setState({ Keyindex: event.target.value, currentWriteStatus: "" })
     if (event.target.value.length == 0) {
       this.props.isIndexWritten(false)
     }
@@ -402,7 +420,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
   }
 
 
-  onSaveData(trans , BothExist) {
+  onSaveData(trans, BothExist) {
     let that = this
     // event.preventDefault();
 
@@ -431,7 +449,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
 
 
   encryptData = (BothExist) => {
-    this.setState({ currentWriteStatus: "Encrypting..." , loadingWrite: true })
+    this.setState({ currentWriteStatus: "Encrypting...", loadingWrite: true })
     // this.setState({ loadingWrite: true });
 
     console.log(this.state.data);
@@ -439,7 +457,7 @@ this.onSaveData(this.state.payment , this.state.BothExist)
     console.log(encrypted.toString(), "encrypted data")
     console.log(this.props.Address, "address")
     let obj = {
-      address: this.props.Address,
+      address: this.state.address,
       index: this.state.Keyindex,
       data: encrypted.toString()
     }
@@ -450,39 +468,39 @@ this.onSaveData(this.state.payment , this.state.BothExist)
     console.log(obj)
     that.setState({ currentWriteStatus: "Waiting for the Response " })
     that.setState({ loadingWrite: true });
-if(BothExist){
-        this.onSaveDataAndFile(obj)
-}
-else{
-    axios.post(api_url + '/sendData', obj)
-      .then(function (response) {
-        that.setState({ loadingWrite: false  })
+    if (BothExist) {
+      this.onSaveDataAndFile(obj)
+    }
+    else {
+      axios.post(api_url + '/sendData', obj)
+        .then(function (response) {
+          that.setState({ loadingWrite: false })
 
-        that.setState({ currentWriteStatus: "Your Data has been saved" , privateKey:'' , Keyindex: '' , data:'' })
-        that.props.isPaymentDone(false)
-        that.props.isDataWritten(false)
-        that.props.isIndexWritten(false)
-        
-        console.log(response);
-      })
+          that.setState({ currentWriteStatus: "Your Data has been saved", privateKey: '', Keyindex: '', data: '' })
+          that.props.isPaymentDone(false)
+          that.props.isDataWritten(false)
+          that.props.isIndexWritten(false)
 
-      .catch(function (error) {
-        alert("Your Transaction has been cancelled");
-        that.setState({ currentStatus: "MetaMask Transaction Failed" })
-        that.setState({ loadingWrite: false });
-        that.props.isPaymentDone(false)
-        that.props.isDataWritten(false)
-        that.props.isIndexWritten(false)
-        // that.props.isFileChosen(false)
-        console.log(error);
-      });
+          console.log(response);
+        })
+
+        .catch(function (error) {
+          alert("Your Transaction has been cancelled");
+          that.setState({ currentStatus: "MetaMask Transaction Failed" })
+          that.setState({ loadingWrite: false });
+          that.props.isPaymentDone(false)
+          that.props.isDataWritten(false)
+          that.props.isIndexWritten(false)
+          // that.props.isFileChosen(false)
+          console.log(error);
+        });
     }
   }
 
-  transactionSuccessful(trans , BothExist) {
+  transactionSuccessful(trans, BothExist) {
     console.log(trans, "transaction")
     console.log(BothExist, "both existing")
-    this.onUploadData(trans , BothExist)
+    this.onUploadData(trans, BothExist)
     // this.onSaveData()
   }
 
@@ -500,10 +518,10 @@ else{
 
 
         <div className='add-product button-alignment' >
-          
+
           {/* <div className='add-product button-alignment'> */}
           <h1 className="heading">Write Data</h1>
-          <br/>
+          <br />
           <input
             type='password'
             className='form-control'
@@ -517,20 +535,25 @@ else{
             className='form-control'
             onChange={this.OnChangeKey.bind(this)}
             placeholder='Index'
-            value = {this.state.Keyindex}
+            value={this.state.Keyindex}
           />
           <br />
           <textarea name="text" id="exampleText"
             placeholder='Your Text'
             onChange={this.OnChangeData.bind(this)}
-            value = {this.state.data}
+            value={this.state.data}
             className='form-control'
 
-            rows = "10"
-            cols = "92"
-            style = {{resize: 'none'}}
+            rows="10"
+            cols="92"
+            style={{ resize: 'none' }}
           />
           <br />
+          {(this.props.loadingTrans) 
+          ?
+        
+            (<span style={{ fontSize: '20px', color: 'blue' }}>{<img src={loader} style={{ height: "2em" }} />}</span>)
+            : (null)}
           <span style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentWriteStatus}{this.state.loadingWrite && <img src={loader} style={{ height: "2em" }} />}</span>
 
           <br />
@@ -542,13 +565,13 @@ else{
             type='file'
             ref='myFile'
             multiple="multiple"
-            key = {this.state.fileKey}
+            key={this.state.fileKey}
             onChange={this.captureFile}
             className='form-control'
-            style = {{height : 'auto'}}
-            // value ={this.state.filenaaam}
-             />
-            <br/>
+            style={{ height: 'auto' }}
+          // value ={this.state.filenaaam}
+          />
+          <br />
 
           <CreditCard />
 
@@ -556,7 +579,7 @@ else{
           <br />
           <label style={{ fontSize: '20px', color: 'blue' }}>{this.state.currentStatus}{this.state.loading && <img src={loader} style={{ height: "2em" }} />}</label>
 
-<br/>
+          <br />
         </div>
 
 
@@ -578,7 +601,8 @@ function mapStateToProp(state) {
     payment: state.root.payment,
     // writepayment: state.root.writepayment,
     dataWritten: state.root.datawritten,
-    fileChosen: state.root.filechosen
+    fileChosen: state.root.filechosen,
+    loadingTrans: state.root.loadingTrans
 
   })
 }
@@ -601,9 +625,7 @@ function mapDispatchToProp(dispatch) {
     getFileHash: (file_hash) => {
       dispatch(getFileHash(file_hash));
     },
-    userPrivateKey: (key) => {
-      dispatch(getUserPrivateKey(key))
-    },
+
     isFileSelected: (selection) => {
       dispatch(isFileSelected(selection));
     },
@@ -619,8 +641,14 @@ function mapDispatchToProp(dispatch) {
     isDataWritten: (written) => {
       dispatch(isDataWritten(written));
     },
+    getUserPrivateKey: (userPrivateKey) => {
+      dispatch(getUserPrivateKey(getUserPrivateKey));
+    },
     isIndexWritten: (indexwritten) => {
       dispatch(isIndexWritten(indexwritten));
+    },
+    loadingTransaction: (loader) => {
+      dispatch(loadingTransaction(loader));
     }
   })
 }

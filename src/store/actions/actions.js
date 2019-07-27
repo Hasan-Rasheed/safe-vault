@@ -181,6 +181,13 @@ export function getFileNames(filenames){
     }
 }
 
+export function loadingTransaction(loader){
+    console.log(loader,"loader")
+    return dispatch => {
+        dispatch({ type: 'LOADING_TRANSACTION', payload: loader })
+    }
+}
+
 export function getUserPrivateKey(key){
     console.log(key,"private Key")
     return dispatch => {

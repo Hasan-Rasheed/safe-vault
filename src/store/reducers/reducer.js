@@ -14,7 +14,8 @@ const INITIAL_STATE = {
     filechosen:false,
     payment:false,
     datawritten:false,
-    indexwritten:false
+    indexwritten:false,
+    loadingTrans: false
 
 }
 
@@ -37,11 +38,11 @@ export default (state = INITIAL_STATE, action) => {
                 ...state,
                 isLogin: action.payload
             })
-        // case 'SHOW_PROGRESS_BAR':
-        // return ({
-        //     ...state,
-        //     progressBarDisplay : action.payload
-        // })
+        case 'LOADING_TRANSACTION':
+        return ({
+            ...state,
+            loadingTrans : action.payload
+        })
         case 'ERROR_MESSAGE':
             return ({
                 ...state,

@@ -185,7 +185,7 @@ class DownloadFile extends Component {
     }
     else if (this.state.fileSelected && this.state.Keyindex !== '') {
 
-     await  this.onRetrieveData()
+      this.onRetrieveData()
       this.fileDownload()
       // this.setState({privateKey: '' , Keyindex: '' })
     }
@@ -211,10 +211,7 @@ class DownloadFile extends Component {
       console.log(this.state.checkExist, "existing")
       this.onDownloadFile(event);
     }
-    else{
-      this.setState({currentStatus: "File Hash not exist in the BlockChain", loading:false})
-      return
-    }
+    
   }
 
 
@@ -342,19 +339,19 @@ console.log(this.state.active)
       address: this.props.Address,
       index: this.state.Keyindex
     }
-    this.setState({ currentDataStatus: "Waiting for the Response " , loadingData:true })
+    this.setState({ currentDataStatus: "Waiting for the Response... " , loadingData:true })
 
     console.log(obj)
     axios.post(api_url + '/existFile', obj)
       .then(function (response) {
-
+        console.log(response)
         console.log(response.data.data )
         that.decryptData(response.data.data); 
 
       })
       .catch(function (error) {
 
-        this.setState({ currentDataStatus: "" , loadingData:false })
+        that.setState({ currentDataStatus: "" , loadingData:false })
 
         console.log(error);
       });
@@ -363,8 +360,9 @@ console.log(this.state.active)
   }
 
   decryptData = (encryptedData) => {
-    if(encryptedData == ''){
-    this.setState({ currentDataStatus: "Decrypting Data " })
+    console.log(encryptedData, "encrypted Data")
+    if(encryptedData !== ''){
+    this.setState({ currentDataStatus: "Decrypting Data.. " })
 
     var decrypted = CryptoJS.AES.decrypt(encryptedData, this.state.privateKey).toString(CryptoJS.enc.Latin1);
     this.setState({ decryptedData: decrypted })
@@ -372,10 +370,10 @@ console.log(this.state.active)
     this.setState({ currentDataStatus: "" ,  loadingData: false , Keyindex: '' })
 
   }
-  else{ 
-    this.setState({currentDataStatus: 'Ivalid Index' , loadingData: false})
+  // else{ 
+  //   this.setState({currentDataStatus: 'Invalid Index' , loadingData: false})
 
-  }
+  // }
 }
 
 
