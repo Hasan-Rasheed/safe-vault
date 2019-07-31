@@ -1,0 +1,48 @@
+﻿
+SAFE_VAULT
+
+
+
+Guide for Using Safe-Vault
+
+Registration process:
+
+    • Make sure the CORS is off
+    • Register yourself.
+
+Login Process:
+
+    • Make sure the CORS is off
+    • Login yourself
+
+While Uploading:
+
+    • Make sure the CORS is ON 
+    • upload any file
+
+For Credit Card Credentials:
+
+    • Enter any valid email address.
+    • USE this details for confirmation
+        ◦ Credit Card No: 4242 4242 4242 4242
+        ◦ Date : 01/20 
+        ◦ CVC: 123
+
+While Writing the Data:
+
+    • Make Sure the CORS is on
+    • save your data
+
+While downloading the File:
+
+    • Make sure the CORS is on
+    • Select the file
+    • enter your private key and download 
+
+While Reading the Data 
+
+    • fill the index and Private key
+    • Retrieve the data
+
+
+

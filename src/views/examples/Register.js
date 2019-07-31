@@ -64,7 +64,6 @@ class Register extends Component {
           console.log(snapshot)
           console.log('signed up successfully', snapshot.user.uid);
 
-          this.props.userPrivateKey(user.password)
           delete user.password;
           this.props.userLoggedinOrRegistered("Registered")
           let currentUser = snapshot.user.uid;
@@ -88,8 +87,13 @@ class Register extends Component {
               this.props.updateUserName(user.userName);
               this.setState({ userName: "", email: "", password: "" })
               this.setState({ loading: false });
-
-              this.props.history.push('/admin/index');
+              if(this.props.address !== ''){
+                console.log(this.props.address , "address before push")
+                this.props.history.push('/admin/index');
+              }
+              else{
+                alert("Address not found")
+              }
             })
 
             .catch((err) => {
@@ -104,12 +108,11 @@ class Register extends Component {
           this.setState({ userName: "", email: "", password: "" })
 
           console.log('error', err.message);
-          this.setState({ registerError: 'The email address is already in use by another account.' })
+          this.setState({ registerError: 'The email address is already in use by another account.'  , loading: false})
         })
     }
   }
   _onChangeEmail(event) {
-    this.props.errorMessage('');
     this.setState({
       email: event.target.value
 
@@ -189,6 +192,7 @@ class Register extends Component {
 function mapStateToProp(state) {
   return ({
     errorMsg: state.root.errorMessage,
+    address : state.root.address
 
   })
 }
@@ -203,10 +207,6 @@ function mapDispatchToProp(dispatch) {
 
     currentUserId: (uid) => {
       dispatch(getCurrentUserId(uid))
-    },
-
-    userPrivateKey: (key) => {
-      dispatch(getUserPrivateKey(key))
     }
     ,
     userLoggedinOrRegistered: (notify) => {

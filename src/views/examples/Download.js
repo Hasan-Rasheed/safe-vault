@@ -59,11 +59,12 @@ class DownloadFile extends Component {
       isButtonDisabled: this.props.file_selected,
       checkExist: false,
       loading: '',
-      privateKey: '',
+      loadingData:'',
       Keyindex: '',
       data: '',
       decryptedData: '',
-      fileSelected: false
+      fileSelected: false,
+      active: ''
 
     }
     this.OnChangePrivateKey = this.OnChangePrivateKey.bind(this);
@@ -172,22 +173,27 @@ class DownloadFile extends Component {
 
   }
 
-  onButtonClick() {
-    if (this.state.privateKey === '') {
+  async onButtonClick() {
+
+    console.log(this.state.fileSelected , "fileselected")
+    console.log(this.state.Keyindex , "Keyindex")
+
+    if (this.state.privateKey == '') {
 
       alert("Enter you Private Key");
       return
     }
-    else if (this.state.fileSelected && !this.state.Keyindex == '') {
+    else if (this.state.fileSelected && this.state.Keyindex !== '') {
 
       this.onRetrieveData()
       this.fileDownload()
+      // this.setState({privateKey: '' , Keyindex: '' })
     }
     else if (this.state.fileSelected && this.state.Keyindex == '') {
 
       this.fileDownload()
     }
-    else if (!this.state.fileSelected && !this.state.Keyindex == '') {
+    else if (!this.state.fileSelected && this.state.Keyindex !== '') {
 
       this.onRetrieveData()
     }
@@ -205,6 +211,7 @@ class DownloadFile extends Component {
       console.log(this.state.checkExist, "existing")
       this.onDownloadFile(event);
     }
+    
   }
 
 
@@ -219,6 +226,8 @@ class DownloadFile extends Component {
       this.setState({ fileUrl: url })
     }).catch(err => {
       console.log(err, "url error")
+      this.setState({currentStatus:'Error! please try again' , active: null , fileSelected: false})
+      return
     })
 
     this.setState({ currentStatus: "Downloading file. Please wait.." })
@@ -248,6 +257,8 @@ class DownloadFile extends Component {
         if (!decrypted.toString().includes("data")) {
 
           alert("Make sure Your Private Key to Download the File is valid and your CORS is enabled")
+        this.setState({ currentDataStatus: "" , loading:false })
+
           return;
         }
 
@@ -260,7 +271,9 @@ class DownloadFile extends Component {
         a.click();
 
         this.setState({ currentStatus: "File downloaded." })
-        this.setState({ loading: false });
+        this.setState({ active: null })
+
+        this.setState({ loading: false , fileSelected: false});
 
       };
     };
@@ -268,19 +281,27 @@ class DownloadFile extends Component {
   }
 
   handleLabelClick(filename) {
-
+console.log(this.state.active)
     if (this.state.active === filename) {
+      console.log("File unselected")
       this.setState({ active: null })
-    } else {
-      this.setState({ active: filename })
-    }
+    this.setState({ fileSelected: false })
+      
 
+    } else {
+      console.log("File selected")
+
+      this.setState({ active: filename })
+      this.setState({ fileSelected: true })
+    
+    }
     console.log(filename)
     let file_Hash = sha256(utf8.encode(filename));
     console.log(file_Hash)
     this.props.getFileHash(file_Hash);
 
-    this.setState({ fileSelected: true })
+   
+
 
     // <Download/>
   }
@@ -289,7 +310,9 @@ class DownloadFile extends Component {
     if (this.state.active === filename) {
       return "#b2b2e0";
     }
+
     return "";
+    
   }
   fileExtension = (file) => {
     let extension = file.slice((file.lastIndexOf(".") - 1 >>> 0) + 2);
@@ -316,15 +339,20 @@ class DownloadFile extends Component {
       address: this.props.Address,
       index: this.state.Keyindex
     }
-    this.setState({ currentDataStatus: "Waiting for the Response " })
+    this.setState({ currentDataStatus: "Waiting for the Response... " , loadingData:true })
 
     console.log(obj)
     axios.post(api_url + '/existFile', obj)
       .then(function (response) {
-        console.log(response.data.data);
-        that.decryptData(response.data.data);
+        console.log(response)
+        console.log(response.data.data )
+        that.decryptData(response.data.data); 
+
       })
       .catch(function (error) {
+
+        that.setState({ currentDataStatus: "" , loadingData:false })
+
         console.log(error);
       });
     // [post]
@@ -332,21 +360,28 @@ class DownloadFile extends Component {
   }
 
   decryptData = (encryptedData) => {
-    this.setState({ currentDataStatus: "Decrypting Data " })
+    console.log(encryptedData, "encrypted Data")
+    if(encryptedData !== ''){
+    this.setState({ currentDataStatus: "Decrypting Data.. " })
 
     var decrypted = CryptoJS.AES.decrypt(encryptedData, this.state.privateKey).toString(CryptoJS.enc.Latin1);
     this.setState({ decryptedData: decrypted })
     console.log(decrypted, "decrypted data")
-    this.setState({ currentDataStatus: "" })
+    this.setState({ currentDataStatus: "" ,  loadingData: false , Keyindex: '' })
 
   }
+  // else{ 
+  //   this.setState({currentDataStatus: 'Invalid Index' , loadingData: false})
+
+  // }
+}
 
 
 
   render() {
     return (
       <div className="form-styling">
-        <div className='add-product button-alignment'>
+        <div className="add-product button-alignment">
           <div >
 
             <h1 className="heading">Read Data</h1>
@@ -355,6 +390,8 @@ class DownloadFile extends Component {
               className='form-control'
               onChange={this.OnChangePrivateKey}
               placeholder='Enter Your Private Key to Decrypt the Data'
+              value={this.state.privateKey}
+
             />
             <br />
             <input
@@ -362,18 +399,24 @@ class DownloadFile extends Component {
               className='form-control'
               onChange={this.OnChangeKey.bind(this)}
               placeholder='Index'
+              value = {this.state.Keyindex}
+
             />
             <br />
-            <Input
+            <textarea
               type="textarea"
               name="text"
               id="exampleText"
               value={this.state.decryptedData}
               placeholder='Your Text'
+              className='form-control'
+              rows="10"
+              cols="92"
+              style={{ resize: 'none' }}
               disabled />
 
             <br />
-            <label style={{ color: 'blue' }}>{this.state.currentDataStatus}</label>
+            <label style={{ color: 'blue' }}>{this.state.currentDataStatus}{this.state.loadingData && <img src={loader} style={{ height: "2em" }} />}</label>
 
           </div>
         </div>

@@ -1,7 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 var exports = module.exports = {};
 
-console.log(process.env.STRIPE_SECRET_KEY)
+console.log(process.env.STRIPE_SECRET_KEY)z
 const stripeChargeCallback = res => (stripeErr, stripeRes) => {
    if (stripeErr) {
        res.status(500).send({ error: stripeErr });

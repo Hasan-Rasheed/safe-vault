@@ -3,8 +3,8 @@ import StripeCheckout from "react-stripe-checkout";
 import axios from "axios";
 import { connect } from 'react-redux';
 
-import { isPaymentDone } from "../../store/actions/actions";
-const publishableKey = "pk_test_0ycP3u6grjnXXuZfHVIfyHd9";
+import { isPaymentDone, loadingTransaction } from "../../store/actions/actions";
+const publishableKey = "pk_test_3vWexxoZqy0lfUR6JbWpkHDd00Qytb9qLu";
 
 class stripeBtn extends Component {
     // let that=this;
@@ -43,14 +43,16 @@ class stripeBtn extends Component {
                 return
             }
         }
-
+        this.props.loadingTransaction(true)
         console.log(body)
-        axios.post("http://35.229.110.230:8000/", body)
+        axios.post("http://34.74.237.53:8000/", body)
             .then(response => {
                 console.log(response, "response");
 
                 alert("Payment Success");
                 this.props.isPaymentDone(true)
+    this.props.loadingTransaction(false)
+
 
             })
             .catch(error => {
@@ -58,6 +60,7 @@ class stripeBtn extends Component {
 
                 console.log("Payment Error: ", error);
                 alert("Payment Error");
+                
 
             });
     };
@@ -99,6 +102,9 @@ function mapDispatchToProp(dispatch) {
 
         isPaymentDone: (transaction) => {
             dispatch(isPaymentDone(transaction));
+        },
+        loadingTransaction: (loader) => {
+            dispatch(loadingTransaction(loader))
         }
 
     })
