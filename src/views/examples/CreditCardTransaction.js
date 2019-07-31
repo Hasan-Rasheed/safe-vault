@@ -4,7 +4,7 @@ import axios from "axios";
 import { connect } from 'react-redux';
 
 import { isPaymentDone } from "../../store/actions/actions";
-const publishableKey = "pk_test_3vWexxoZqy0lfUR6JbWpkHDd00Qytb9qLu";
+const publishableKey = "pk_test_0ycP3u6grjnXXuZfHVIfyHd9";
 
 class stripeBtn extends Component {
     // let that=this;

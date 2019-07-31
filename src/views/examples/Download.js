@@ -80,7 +80,7 @@ class DownloadFile extends Component {
   async componentDidMount() {
 
     let that = this;
-    firebase.firestore().collection("userData").doc(this.state.uid).get().then(function (doc) {
+    firebase.firestore().collection("userData").doc(that.state.uid).get().then(function (doc) {
       if (doc.exists) {
         console.log("Document data:", doc.data());
         console.log(doc.data().address)
@@ -95,7 +95,7 @@ class DownloadFile extends Component {
 
     console.log(this.props.currentUser, "checking dataa")
 
-    await firebase.firestore().collection('userData').doc(this.state.uid).onSnapshot(function (snapshot) {
+    await firebase.firestore().collection('userData').doc(that.state.uid).onSnapshot(function (snapshot) {
       if (snapshot.exists) {
 
         //  that.state.fileList = snapshot.data().files;
@@ -109,10 +109,11 @@ class DownloadFile extends Component {
 
       } else {
         // doc.data() will be undefined in this case
+        that.setState({currentStatus:"Please Select the file to download" , loading: false})
         console.log("No such document!");
       }
     });
-    this.setState({ loading: false })
+    that.setState({ loading: false })
 
 
   }
