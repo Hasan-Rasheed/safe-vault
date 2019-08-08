@@ -24,8 +24,7 @@ class stripeBtn extends Component {
             alert("please enter private key")
             return
         }
-       else if (!this.props.fileChosen && !this.props.dataWritten) {
-            console.log()
+       else if (!this.props.fileChosen && !this.props.dataWritten && !this.props.indexWritten) {
             alert("CHOOSE THE FILE Or Write the Data")
             return
         }
@@ -37,12 +36,14 @@ class stripeBtn extends Component {
         }
       
 
-        if (this.props.dataWritten) {
-            if (!this.props.indexWritten) {
-                alert("Please Enter You Index Key")
+        else if (this.props.indexWritten) {
+            if (!this.props.dataWritten) {
+                alert("Please Enter You Data")
                 return
             }
         }
+        if(  (this.props.dataWritten && this.props.indexWritten)  || this.props.fileChosen){
+            console.log(this.props.dataWritten, "+" ,  this.props.indexWritten, "+" ,this.props.fileChosen)
         this.props.loadingTransaction(true)
         console.log(body)
         axios.post("http://34.74.237.53:8000/", body)
@@ -60,10 +61,15 @@ class stripeBtn extends Component {
 
                 console.log("Payment Error: ", error);
                 alert("Payment Error");
+    this.props.loadingTransaction(false)
+
                 
 
             });
+        
+        }
     };
+
     render() {
         return (
 

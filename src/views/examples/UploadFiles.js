@@ -363,6 +363,8 @@ class UploadFiles extends Component {
             that.setState({ loading: false });
             that.props.isPaymentDone(false)
             that.props.isFileChosen(false)
+          that.props.getUserPrivateKey("")
+
           })
 
 
@@ -373,6 +375,9 @@ class UploadFiles extends Component {
           that.setState({ loading: false, currentStatus: "" })
           that.props.isPaymentDone(false)
           that.props.isFileChosen(false)
+          that.props.getUserPrivateKey("")
+
+          
           console.log("data storage error " + errr)
         })
 
@@ -386,6 +391,8 @@ class UploadFiles extends Component {
           that.setState({ loading: false });
           that.props.isPaymentDone(false)
           that.props.isFileChosen(false)
+          that.props.getUserPrivateKey("")
+
 
 
           // console.log(error);
@@ -480,7 +487,7 @@ class UploadFiles extends Component {
           that.props.isPaymentDone(false)
           that.props.isDataWritten(false)
           that.props.isIndexWritten(false)
-
+          that.props.getUserPrivateKey("")
           console.log(response);
         })
 
@@ -491,6 +498,8 @@ class UploadFiles extends Component {
           that.props.isPaymentDone(false)
           that.props.isDataWritten(false)
           that.props.isIndexWritten(false)
+          that.props.getUserPrivateKey("")
+
           // that.props.isFileChosen(false)
           console.log(error);
         });
@@ -642,7 +651,7 @@ function mapDispatchToProp(dispatch) {
       dispatch(isDataWritten(written));
     },
     getUserPrivateKey: (userPrivateKey) => {
-      dispatch(getUserPrivateKey(getUserPrivateKey));
+      dispatch(getUserPrivateKey(userPrivateKey));
     },
     isIndexWritten: (indexwritten) => {
       dispatch(isIndexWritten(indexwritten));
